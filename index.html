@@ -3,387 +3,191 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Poker GTO</title>
+<title>德州胜率计算</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e17;color:#e8f0ff;min-height:100vh;padding:12px;padding-bottom:80px}
-.header{text-align:center;padding:16px 0;border-bottom:1px solid #1e2a42;margin-bottom:16px}
-.header h1{font-size:20px;font-weight:700}
-.header p{color:#6b7fa3;font-size:12px;margin-top:4px}
-.card{background:#131a2b;border:1px solid #1e2a42;border-radius:12px;padding:14px;margin-bottom:12px}
-.label{font-size:11px;color:#6b7fa3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
-.hand-row{display:flex;gap:8px}
-.card-slot{flex:1;height:54px;background:#1a2332;border:2px solid #1e2a42;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;cursor:pointer;transition:all .15s}
-.card-slot:hover{border-color:#3b82f6}
-.card-slot.active{border-color:#00d26a;background:rgba(0,210,106,.08)}
-.suit-row{display:flex;gap:6px;margin-top:8px}
-.suit-btn{flex:1;height:40px;background:#1a2332;border:1px solid #1e2a42;border-radius:8px;color:#e8f0ff;font-size:15px;cursor:pointer}
-.board-row{display:flex;gap:6px}
-.board-slot{width:46px;height:46px;background:#1a2332;border:1px solid #1e2a42;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;cursor:pointer;flex-shrink:0}
-.board-slot.active{border-color:#3b82f6;background:rgba(59,130,246,.1)}
-select,input{width:100%;height:44px;background:#1a2332;border:1px solid #1e2a42;border-radius:8px;color:#e8f0ff;font-size:15px;padding:0 10px;margin-bottom:10px}
-select:focus,input:focus{outline:none;border-color:#3b82f6}
-.row{display:flex;gap:10px}.row>div{flex:1}
-.btn{width:100%;height:50px;background:linear-gradient(135deg,#00d26a,#00a854);border:none;border-radius:10px;color:#000;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px}
-.btn:active{transform:scale(.98)}
-.result{margin-top:16px;padding:16px;background:#131a2b;border:1px solid #1e2a42;border-radius:12px;display:none}
-.result.show{display:block;animation:fadeIn .3s}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.decision{font-size:26px;font-weight:800;text-align:center;margin-bottom:10px}
-.decision.call{color:#00d26a}.decision.fold{color:#ff4757}.decision.raise{color:#3b82f6}.decision.check{color:#fbbf24}
-.reason{color:#6b7fa3;font-size:14px;line-height:1.5;text-align:center;margin-bottom:12px}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.info{background:#1a2332;padding:10px;border-radius:8px}
-.info-label{font-size:10px;color:#6b7fa3;text-transform:uppercase}
-.info-value{font-size:15px;font-weight:600;margin-top:2px}
-.detail{margin-top:10px;padding:10px;background:rgba(167,139,250,.1);border:1px solid #a78bfa;border-radius:8px;font-size:12px;color:#a78bfa;line-height:1.5}
-.rank-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;z-index:1000;padding:20px;align-items:center;justify-content:center}
-.rank-modal.active{display:flex;flex-direction:column}
-.rank-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:280px;width:100%}
-.rank-btn{height:50px;background:#131a2b;border:1px solid #1e2a42;border-radius:8px;color:#e8f0ff;font-size:18px;font-weight:600;cursor:pointer;width:100%}
-.rank-btn:active{background:#1e2a42}
-.footer{position:fixed;bottom:0;left:0;right:0;background:#0a0e17;border-top:1px solid #1e2a42;padding:10px 16px;text-align:center;color:#6b7fa3;font-size:11px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e17;color:#e8f0ff;min-height:100vh;padding:20px}
+h1{font-size:22px;text-align:center;margin-bottom:20px}
+.card-row{display:flex;gap:8px;margin-bottom:12px;align-items:center}
+.card-input{flex:1;height:50px;background:#1a2332;border:2px solid #1e2a42;border-radius:10px;color:#e8f0ff;font-size:20px;font-weight:700;text-align:center;outline:none}
+.card-input:focus{border-color:#3b82f6}
+.card-input.done{border-color:#00d26a;background:rgba(0,210,106,.08)}
+label{font-size:13px;color:#6b7fa3;display:block;margin-bottom:6px}
+.suit-btns{display:flex;gap:6px;margin-bottom:16px}
+.suit-btn{flex:1;height:44px;background:#1a2332;border:1px solid #1e2a42;border-radius:8px;color:#e8f0ff;font-size:15px;cursor:pointer}
+.board-row{display:flex;gap:6px;flex-wrap:wrap}
+.board-card{width:48px;height:48px;background:#1a2332;border:2px solid #1e2a42;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;cursor:pointer}
+.board-card.active{border-color:#3b82f6;background:rgba(59,130,246,.1)}
+.board-card.done{border-color:#00d26a}
+.btn{width:100%;height:52px;background:linear-gradient(135deg,#00d26a,#00a854);border:none;border-radius:10px;color:#000;font-size:18px;font-weight:700;cursor:pointer;margin-top:20px}
+.btn:active{transform:scale(0.98)}
+.result{margin-top:24px;padding:24px;background:#131a2b;border:1px solid #1e2a42;border-radius:16px;text-align:center;display:none}
+.result.show{display:block}
+.big-num{font-size:64px;font-weight:900;color:#00d26a}
+.sub{font-size:14px;color:#6b7fa3;margin-top:8px}
+.rank-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);display:none;z-index:1000;flex-direction:column;align-items:center;justify-content:center}
+.rank-modal.active{display:flex}
+.rank-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:280px}
+.rank-btn{height:52px;background:#1a2332;border:1px solid #1e2a42;border-radius:8px;color:#e8f0ff;font-size:20px;font-weight:700;cursor:pointer}
+.rank-btn:active{background:#2a3a52}
+.info{font-size:12px;color:#6b7fa3;margin-top:6px;text-align:center}
 </style>
 </head>
 <body>
-<div class="header"><h1>Poker GTO</h1><p>6人桌 · GTO策略分析</p></div>
+<h1>德州胜率计算</h1>
 
-<div class="card">
-<div class="label">手牌</div>
-<div class="hand-row">
-<div class="card-slot" id="h1" onclick="pickCard(1)">第1张</div>
-<div class="card-slot" id="h2" onclick="pickCard(2)">第2张</div>
+<div>
+<label>你的手牌</label>
+<div class="card-row">
+<input class="card-input" id="c1" placeholder="A" maxlength="1" onclick="pick(1)">
+<input class="card-input" id="c2" placeholder="K" maxlength="1" onclick="pick(2)">
 </div>
-<div class="suit-row" id="suitBtns" style="display:none;">
-<button class="suit-btn" onclick="pickSuit('s')">黑桃</button>
-<button class="suit-btn" onclick="pickSuit('h')">红桃</button>
-<button class="suit-btn" onclick="pickSuit('d')">方块</button>
-<button class="suit-btn" onclick="pickSuit('c')">梅花</button>
+<div class="suit-btns" id="suitBtns" style="display:none">
+<button class="suit-btn" onclick="setsuit('s')">♠ 黑桃</button>
+<button class="suit-btn" onclick="setsuit('h')">♥ 红桃</button>
+<button class="suit-btn" onclick="setsuit('d')">♦ 方块</button>
+<button class="suit-btn" onclick="setsuit('c')">♣ 梅花</button>
 </div>
 </div>
 
-<div class="card">
-<div class="label">公共牌</div>
+<div style="margin-top:20px">
+<label>公共牌（可不填）</label>
 <div class="board-row">
-<div class="board-slot" id="b0" onclick="pickBoard(0)">翻牌1</div>
-<div class="board-slot" id="b1" onclick="pickBoard(1)">翻牌2</div>
-<div class="board-slot" id="b2" onclick="pickBoard(2)">翻牌3</div>
-<div class="board-slot" id="b3" onclick="pickBoard(3)">转牌</div>
-<div class="board-slot" id="b4" onclick="pickBoard(4)">河牌</div>
+<div class="board-card" id="b0" onclick="pickb(0)"></div>
+<div class="board-card" id="b1" onclick="pickb(1)"></div>
+<div class="board-card" id="b2" onclick="pickb(2)"></div>
+<div class="board-card" id="b3" onclick="pickb(3)">T</div>
+<div class="board-card" id="b4" onclick="pickb(4)">R</div>
 </div>
-</div>
-
-<div class="card">
-<div class="label">位置</div>
-<select id="position">
-<option value="UTG">UTG 枪口位</option>
-<option value="MP">MP 中间位</option>
-<option value="CO">CO 关位</option>
-<option value="BTN" selected>BTN 按钮位</option>
-<option value="SB">SB 小盲</option>
-<option value="BB">BB 大盲</option>
-</select>
-
-<div class="label" style="margin-top:8px">对手数量</div>
-<select id="nOpponents">
-<option value="1">1个对手</option>
-<option value="2">2个对手</option>
-<option value="3">3+个对手</option>
-</select>
-
-<div class="label" style="margin-top:8px">底池类型</div>
-<select id="potType">
-<option value="single">单次加注</option>
-<option value="3bet">3bet底池</option>
-<option value="4bet+">4bet+底池</option>
-</select>
-
-<div class="label" style="margin-top:8px">对手行动</div>
-<select id="action">
-<option value="check">过牌 (Check)</option>
-<option value="bet">下注 (Bet)</option>
-<option value="raise">加注 (Raise)</option>
-<option value="call">跟注 (Call)</option>
-</select>
-
-<div class="row">
-<div><div class="label">下注 (BB)</div><input type="number" id="betSize" value="0" min="0"></div>
-<div><div class="label">底池 (BB)</div><input type="number" id="potSize" value="10" min="1"></div>
-</div>
-<div><div class="label">筹码 (BB)</div><input type="number" id="stackSize" value="100" min="1"></div>
+<div class="info">点击牌面选大小，再选花色</div>
 </div>
 
-<button class="btn" onclick="analyze()">开始分析</button>
+<button class="btn" onclick="calc()">计算胜率</button>
 
 <div class="result" id="result">
-<div class="decision" id="decision"></div>
-<div class="reason" id="reason"></div>
-<div class="info-grid" id="infoGrid"></div>
-<div class="detail" id="detail" style="display:none"></div>
+<div class="big-num" id="winRate">--</div>
+<div class="sub" id="subText"></div>
 </div>
 
-<div class="rank-modal" id="rankModal">
-<div class="rank-grid" id="rankGrid"></div>
+<div class="rank-modal" id="modal">
+<div class="rank-grid" id="grid"></div>
 </div>
-
-<div class="footer">Poker GTO · 所有计算在浏览器完成</div>
 
 <script>
 var RANKS=['A','K','Q','J','T','9','8','7','6','5','4','3','2'];
 var SUIT_DISP={s:'\u2660',h:'\u2665',d:'\u2666',c:'\u2663'};
 var SUIT_COL={s:'#e8f0ff',h:'#ff6b6b',d:'#ff6b6b',c:'#e8f0ff'};
-
 var pickTarget=null;
-var h1={r:'',s:''}, h2={r:'',s:''};
+var h={r:'',s:''};
 var board=['','','','',''];
 var pickingBoard=-1;
 
-function init(){
-  var g=document.getElementById('rankGrid');
-  for(var i=0;i<RANKS.length;i++){
-    var r=RANKS[i];
-    var b=document.createElement('button');
-    b.className='rank-btn';
-    b.textContent=r;
-    b.onclick=(function(rv){return function(){selectRank(rv);};})(r);
-    g.appendChild(b);
-  }
-  updateBoardDisplay();
-}
+var g=document.getElementById('grid');
+RANKS.forEach(function(r){
+  var b=document.createElement('button');
+  b.className='rank-btn';
+  b.textContent=r;
+  b.onclick=(function(rv){return function(){selRank(rv);};})(r);
+  g.appendChild(b);
+});
 
-function pickCard(n){pickTarget=n;pickingBoard=-1;document.getElementById('rankModal').classList.add('active');}
-function pickBoard(idx){pickTarget=-1;pickingBoard=idx;document.getElementById('rankModal').classList.add('active');}
+function pick(n){pickTarget=n;pickingBoard=-1;h={r:'',s:''};document.getElementById('suitBtns').style.display='flex';document.getElementById('modal').classList.add('active');}
+function pickb(idx){pickTarget=-1;pickingBoard=idx;board[idx]='';document.getElementById('modal').classList.add('active');}
 
-function selectRank(rank){
-  document.getElementById('rankModal').classList.remove('active');
+function selRank(r){
+  document.getElementById('modal').classList.remove('active');
   document.getElementById('suitBtns').style.display='flex';
-  if(pickingBoard>=0){board[pickingBoard]=rank;}
-  else if(pickTarget===1){h1.r=rank;}
-  else if(pickTarget===2){h2.r=rank;}
-  updateDisplay();
+  if(pickingBoard>=0){board[pickingBoard]=r;updateBoard();}
+  else{h.r=r;document.getElementById('c'+(pickTarget===1?1:2)).value=r;document.getElementById('c'+(pickTarget===1?1:2)).classList.add('done');}
 }
 
-function pickSuit(suit){
+function setsuit(s){
   document.getElementById('suitBtns').style.display='none';
-  if(pickingBoard>=0){board[pickingBoard]+=suit;}
-  else if(pickTarget===1){h1.s=suit;}
-  else if(pickTarget===2){h2.s=suit;}
-  updateDisplay();
+  if(pickingBoard>=0){board[pickingBoard]+=s;updateBoard();}
+  else{h.s=s;var el=document.getElementById('c'+(pickTarget===1?1:2));el.value+=SUIT_DISP[s];el.style.color=SUIT_COL[s];el.classList.add('done');}
 }
 
-function updateDisplay(){updateHand('h1',h1);updateHand('h2',h2);updateBoardDisplay();}
-
-function updateHand(id,card){
-  var el=document.getElementById(id);
-  if(card.r){
-    el.textContent=card.r+(SUIT_DISP[card.s]||'?');
-    el.style.color=SUIT_COL[card.s]||'#e8f0ff';
-    el.classList.add('active');
-  }else{
-    el.textContent=id==='h1'?'第1张':'第2张';
-    el.style.color='#6b7fa3';el.classList.remove('active');
-  }
-}
-
-function updateBoardDisplay(){
-  var labels=['翻牌1','翻牌2','翻牌3','转牌','河牌'];
+function updateBoard(){
+  var labels=['F1','F2','F3','T','R'];
   for(var i=0;i<5;i++){
     var el=document.getElementById('b'+i);
     var c=board[i];
     if(c&&c.length>=2){
       el.textContent=c[0]+SUIT_DISP[c[1]];
-      el.style.color=SUIT_COL[c[1]];el.classList.add('active');
+      el.style.color=SUIT_COL[c[1]];
+      el.classList.add('done');
     }else{
-      el.textContent=labels[i];el.style.color='#6b7fa3';el.classList.remove('active');
+      el.textContent=labels[i];
+      el.style.color='#6b7fa3';
+      el.classList.remove('done');
     }
   }
-}
-
-function getHand(){if(!h1.r||!h1.s||!h2.r||!h2.s)return'';return h1.r+h1.s+h2.r+h2.s;}
-function getBoardStr(){return board.filter(function(c){return c&&c.length>=2;}).join(' ');}
-
-function analyze(){
-  var hand=getHand();
-  if(!hand){alert('请先选择完整手牌');return;}
-  var data={
-    hand:hand,
-    position:document.getElementById('position').value,
-    nOpponents:parseInt(document.getElementById('nOpponents').value),
-    potType:document.getElementById('potType').value,
-    action:document.getElementById('action').value,
-    betSize:parseFloat(document.getElementById('betSize').value)||0,
-    potSize:parseFloat(document.getElementById('potSize').value)||10,
-    stackSize:parseFloat(document.getElementById('stackSize').value)||100,
-    board:getBoardStr()
-  };
-  var d=gtoDecision(data);
-  showResult(d);
-}
-
-function showResult(d){
-  var r=document.getElementById('result');r.classList.add('show');
-  var dec=document.getElementById('decision');
-  dec.textContent=d.decision||'';
-  var cls='decision ';
-  if(d.action==='call')cls+='call';
-  else if(d.action==='fold')cls+='fold';
-  else if(d.action==='raise'||d.action==='bet'||d.action==='shove')cls+='raise';
-  else cls+='check';
-  dec.className=cls;
-  document.getElementById('reason').textContent=d.reason||'';
-  var grid=document.getElementById('infoGrid');grid.innerHTML='';
-  var actionName='-';
-  if(d.action){
-    if(d.action==='call')actionName='跟注';
-    else if(d.action==='fold')actionName='弃牌';
-    else if(d.action==='raise'||d.action==='bet')actionName='加注';
-    else if(d.action==='shove')actionName='推全下';
-    else if(d.action==='check')actionName='过牌';
-  }
-  var items=[
-    ['手牌',d.hand||'-'],
-    ['胜率',d.equity||'-'],
-    ['SPR',d.SPR||'-'],
-    ['底池赔率',d.potOdds||'-'],
-    ['牌面湿润度',d.texture||'-'],
-    ['行动',actionName]
-  ];
-  for(var i=0;i<items.length;i++){
-    var kv=items[i];
-    if(kv[1]&&kv[1]!=='-'){grid.innerHTML+='<div class="info"><div class="info-label">'+kv[0]+'</div><div class="info-value">'+kv[1]+'</div></div>';}
-  }
-  var detail=document.getElementById('detail');
-  var dt='';
-  if(d.textureDetail)dt+=d.textureDetail;
-  if(d.suggestedSize)dt+=(dt?' | ':'')+'建议下注: '+d.suggestedSize;
-  if(d.equityDetail)dt+=(dt?' | ':'')+d.equityDetail;
-  if(dt){detail.textContent=dt;detail.style.display='block';}else{detail.style.display='none';}
-  r.scrollIntoView({behavior:'smooth'});
 }
 
 var POCKET_PAIRS={'AA':100,'KK':99,'QQ':98,'JJ':97,'TT':95,'99':82,'88':78,'77':74,'66':70,'55':66,'44':62,'33':58,'22':54};
 var HIGH_CARDS={'AKs':96,'AQs':93,'AJs':90,'ATs':87,'A9s':84,'A8s':81,'A7s':78,'A6s':75,'A5s':80,'A4s':77,'A3s':74,'A2s':71,'AKo':94,'AQo':91,'AJo':88,'ATo':85,'A9o':82,'A8o':79,'A7o':76,'A6o':73,'A5o':78,'A4o':75,'A3o':72,'A2o':69,'KQs':87,'KJs':85,'KTs':82,'K9s':79,'K8s':76,'K7s':73,'K6s':70,'K5s':67,'K4s':64,'K3s':61,'K2s':58,'KQo':85,'KJo':83,'KTo':80,'K9o':77,'K8o':74,'K7o':71,'K6o':68,'K5o':65,'K4o':62,'K3o':59,'K2o':56,'QJs':83,'QTs':80,'Q9s':77,'Q8s':74,'Q7s':71,'Q6s':68,'Q5s':65,'Q4s':62,'Q3s':59,'Q2s':56,'QJo':81,'QTo':78,'Q9o':75,'Q8o':72,'Q7o':69,'Q6o':66,'Q5o':63,'Q4o':60,'Q3o':57,'Q2o':54,'JTs':80,'J9s':77,'J8s':74,'J7s':71,'J6s':68,'J5s':65,'J4s':62,'J3s':59,'J2s':56,'JTo':78,'J9o':75,'J8o':72,'J7o':69,'J6o':66,'J5o':63,'J4o':60,'J3o':57,'J2o':54,'T9s':77,'T8s':74,'T7s':71,'T6s':68,'T5s':65,'T4s':62,'T3s':59,'T2s':56,'T9o':75,'T8o':73,'T7o':71,'T6o':69,'T5o':67,'T4o':65,'T3o':63,'T2o':61,'98s':74,'97s':71,'96s':68,'95s':65,'94s':62,'93s':59,'92s':56,'98o':72,'97o':69,'96o':66,'95o':63,'94o':60,'93o':57,'92o':54,'87s':71,'86s':68,'85s':65,'84s':62,'83s':59,'82s':56,'87o':69,'86o':66,'85o':63,'84o':60,'83o':57,'82o':54,'76s':68,'75s':65,'74s':62,'73s':59,'72s':56,'76o':66,'75o':63,'74o':60,'73o':57,'72o':54,'65s':65,'64s':62,'63s':59,'62s':56,'65o':63,'64o':60,'63o':57,'62o':54,'54s':62,'53s':59,'52s':56,'54o':60,'53o':57,'52o':54,'43s':59,'42s':56,'43o':57,'42o':54,'32s':56,'32o':54};
 
-var PREFLOP_RANGE={'UTG':['AA','KK','QQ','JJ','TT','AKs','AKo','AQs','AJs','ATs','KQs'],'MP':['AA','KK','QQ','JJ','TT','99','AKs','AKo','AQs','AJs','ATs','A9s','KQs','KJs','KTs','QJs','QTs','JTs'],'CO':['AA','KK','QQ','JJ','TT','99','88','77','AKs','AKo','AQs','AJs','ATs','A9s','A8s','KQs','KJs','KTs','K9s','QJs','QTs','Q9s','JTs','J9s','T9s','98s','87s','76s'],'BTN':['AA','KK','QQ','JJ','TT','99','88','77','66','55','44','33','22','AKs','AKo','AQs','AJs','ATs','A9s','A8s','A7s','A6s','A5s','A4s','A3s','A2s','KQs','KJs','KTs','K9s','K8s','K7s','QJs','QTs','Q9s','Q8s','JTs','J9s','J8s','T9s','T8s','98s','97s','87s','86s','76s','75s','65s','54s','43s'],'SB':['AA','KK','QQ','JJ','TT','99','88','77','66','55','44','AKs','AKo','AQs','AJs','ATs','A9s','A8s','KQs','KJs','KTs','K9s','QJs','QTs','Q9s','JTs','J9s','T9s','98s','87s','76s','65s'],'BB':['AA','KK','QQ','JJ','TT','99','88','77','66','55','44','33','22','AKs','AKo','AQs','AJs','ATs','A9s','A8s','A7s','A6s','A5s','A4s','A3s','A2s','KQs','KJs','KTs','K9s','K8s','K7s','QJs','QTs','Q9s','Q8s','JTs','J9s','J8s','T9s','T8s','98s','97s','87s','86s','76s','75s','65s','54s','43s','32s']};
-
-function parseHand(handStr){handStr=handStr.toUpperCase().replace(/\s/g,'').replace(/,/g,'');if(handStr.length>=4)return[handStr.slice(0,2),handStr.slice(2,4)];return[null,null];}
-function parseBoard(boardStr){if(!boardStr)return[];return boardStr.toUpperCase().replace(/,/g,' ').split(/\s+/).filter(function(c){return c.length>=2;});}
-function getHandStrength(hand){var tmp=parseHand(hand);var c1=tmp[0],c2=tmp[1];if(!c1||!c2)return 0;var r1=c1[0],s1=c1[1],r2=c2[0],s2=c2[1];if(r1===r2)return POCKET_PAIRS[r1+r2]||50;if(s1===s2)return HIGH_CARDS[r1+r2+'s']||55;return HIGH_CARDS[r1+r2+'o']||50;}
-function stdHand(hand){var tmp=parseHand(hand);var c1=tmp[0],c2=tmp[1];if(!c1||!c2)return'?';if(c1[0]===c2[0])return c1[0]+c2[0];if(c1[1]===c2[1])return c1[0]+c2[0]+'s';return c1[0]+c2[0]+'o';}
-function getRankValue(rank){var v={'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'T':10,'J':11,'Q':12,'K':13,'A':14};return v[rank]||0;}
-
-function analyzeBoardTexture(boardCards){
-  if(!boardCards||boardCards.length===0)return{texture:'干燥',paired:false,flushPossible:false,straightPossible:false,wetness:0};
-  var ranks=boardCards.map(function(c){return c[0];});
-  var suits=boardCards.map(function(c){return c[1];});
-  var paired=(new Set(ranks)).size<ranks.length;
-  var suitCounts={};
-  for(var i=0;i<suits.length;i++){var s=suits[i];suitCounts[s]=(suitCounts[s]||0)+1;}
-  var flushPossible=false;for(var k in suitCounts){if(suitCounts[k]>=3){flushPossible=true;break;}}
-  var rankVals=ranks.map(getRankValue).sort(function(a,b){return a-b;});
-  var straightPossible=false;
-  if(rankVals.length>=3){for(var j=0;j<rankVals.length-2;j++){if(rankVals[j+2]-rankVals[j]<=4){straightPossible=true;break;}}}
-  var wetness=0;if(flushPossible)wetness+=2;if(straightPossible)wetness+=2;if(paired)wetness+=1;if(boardCards.length>=4)wetness+=1;if(boardCards.length>=5)wetness+=2;
-  var texture=wetness<=2?'干燥':wetness<=4?'中性':'湿润';
-  return{texture:texture,paired:paired,flushPossible:flushPossible,straightPossible:straightPossible,wetness:wetness};
+function handVal(hand){
+  if(!hand||hand.length<4)return 0;
+  var r1=hand[0],s1=hand[1],r2=hand[2],s2=hand[3];
+  if(r1===r2)return POCKET_PAIRS[r1+r2]||50;
+  if(s1===s2)return HIGH_CARDS[r1+r2+'s']||55;
+  return HIGH_CARDS[r1+r2+'o']||50;
 }
 
-function estimateEquity(hand,boardCards,nOpponents){
-  nOpponents=nOpponents||1;
-  var base=getHandStrength(hand);
-  if(!boardCards||boardCards.length===0){if(nOpponents===1)return base/100;if(nOpponents===2)return(base-10)/100;return(base-15)/100;}
-  var tmp=parseHand(hand);var c1=tmp[0],c2=tmp[1];
-  if(!c1||!c2)return 0.3;
-  var r1=c1[0],s1=c1[1],r2=c2[0],s2=c2[1];
+function stdHand(hand){
+  if(!hand||hand.length<4)return'?';
+  var r1=hand[0],s1=hand[1],r2=hand[2],s2=hand[3];
+  if(r1===r2)return r1+r2;
+  if(s1===s2)return r1+r2+'s';
+  return r1+r2+'o';
+}
+
+function rval(r){return{'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'T':10,'J':11,'Q':12,'K':13,'A':14}[r]||0;}
+
+function calcEquity(hand,board){
+  var base=handVal(hand);
+  if(!board||board.length===0){
+    return base/100;
+  }
+  var r1=hand[0],s1=hand[1],r2=hand[2],s2=hand[3];
   var hasPair=r1===r2;
-  var boardRanks=boardCards.map(function(c){return c[0];});
-  var boardSuits=boardCards.map(function(c){return c[1];});
-  var strength=base;
-  if(hasPair&&boardRanks.some(function(r){return r===r1;}))strength=Math.min(100,strength+20);
-  var suitedCount=0;
-  for(var si=0;si<2;si++){var ss=si===0?s1:s2;if(boardSuits.filter(function(bs){return bs===ss;}).length>=1)suitedCount++;}
-  var texture=analyzeBoardTexture(boardCards);
-  if(suitedCount>=1&&texture.flushPossible)strength+=10;if(suitedCount>=2)strength+=15;
-  var allRanks=[r1,r2].concat(boardRanks).map(getRankValue);
-  var uniqueSorted=[...new Set(allRanks)].sort(function(a,b){return a-b;});
-  if(uniqueSorted.length>=4){for(var k=0;k<uniqueSorted.length-3;k++){if(uniqueSorted[k+3]-uniqueSorted[k]<=4){strength+=12;break;}}}
-  if(texture.wetness>=4&&!hasPair&&suitedCount<2)strength-=15;
-  strength=Math.max(5,Math.min(95,strength));
-  if(nOpponents>=3)strength-=10;else if(nOpponents>=2)strength-=5;
-  return strength/100;
+  var bRanks=board.map(function(c){return c[0];});
+  var bSuits=board.map(function(c){return c[1];});
+  var str=base;
+  if(hasPair&&bRanks.some(function(r){return r===r1;}))str=Math.min(100,str+20);
+  var suitedCount=[s1,s2].filter(function(s){return bSuits.filter(function(bs){return bs===s;}).length>=1;}).length;
+  if(suitedCount>=1&&bSuits.filter(function(s){return s===s1||s===s2;}).length>=3)str+=10;
+  if(suitedCount>=2)str+=15;
+  var allRanks=[r1,r2].concat(bRanks).map(rval).sort(function(a,b){return a-b;});
+  var uniq=[...new Set(allRanks)].sort(function(a,b){return a-b;});
+  if(uniq.length>=4){for(var k=0;k<uniq.length-3;k++){if(uniq[k+3]-uniq[k]<=4){str+=12;break;}}}
+  str=Math.max(5,Math.min(95,str));
+  return str/100;
 }
 
-function gtoDecision(data){
-  var hand=data.hand||'',position=data.position||'BTN',action=data.action||'check';
-  var betSize=parseFloat(data.betSize)||0,potSize=parseFloat(data.potSize)||10;
-  var board=data.board||'',stackSize=parseFloat(data.stackSize)||100;
-  var nOpponents=parseInt(data.nOpponents)||1,potType=data.potType||'single';
-  var boardCards=parseBoard(board);
-  var tmp=parseHand(hand);var c1=tmp[0],c2=tmp[1];
-  if(!c1||!c2)return{decision:'格式错误',reason:'手牌无效'};
-  var std=stdHand(hand);
-  var SPR=potSize>0?stackSize/potSize:99;
-  var texture=analyzeBoardTexture(boardCards);
-  var equity=estimateEquity(hand,boardCards,nOpponents);
-  var potOdds=betSize>0?betSize/(potSize+betSize):0;
-  var result={hand:std,position:position,board:boardCards,nOpponents:nOpponents,potType:potType,equity:(equity*100).toFixed(1)+'%',baseStrength:getHandStrength(hand),SPR:SPR.toFixed(1),potOdds:betSize>0?(potOdds*100).toFixed(1)+'%':null,texture:texture.texture};
-  if(!boardCards||boardCards.length===0){return preflopDecision(result,hand,position,action,betSize,potType);}
-  return postflopDecision(result,action,betSize,potSize,SPR,texture,equity,potOdds,nOpponents);
-}
-
-function preflopDecision(result,hand,position,action,betSize,potType){
-  var std=stdHand(hand);
-  var strength=getHandStrength(hand);
-  var raiseRange=PREFLOP_RANGE[position.toUpperCase()]||PREFLOP_RANGE['BTN'];
-  var inRange=raiseRange.indexOf(std)!==-1;
-  if(['3bet','4bet+'].indexOf(potType)!==-1){
-    return{...result,decision:strength>=88?'跟注':'弃牌',reason:strength>=88?std+'强度足够':std+'强度不够',action:strength>=88?'call':'fold'};
+function calc(){
+  if(!h.r||!h.s){alert('请先选完整手牌');return;}
+  var hand=h.r+h.s;
+  var hand2='';
+  if(h.r===document.getElementById('c1').value[0]){
+    hand2=document.getElementById('c2').value;
+    if(!hand2||hand2.length<2){alert('请先选完整手牌');return;}
+  }else{
+    hand2=document.getElementById('c1').value;
+    if(!hand2||hand2.length<2){alert('请先选完整手牌');return;}
   }
-  if(['bet','raise','3bet'].indexOf(action)!==-1){
-    if(betSize<=3){
-      if(inRange||strength>=78){return{...result,decision:'跟注',reason:std+'在'+position+'加注范围内，'+betSize+'BB值得跟注',action:'call'};}
-      return{...result,decision:'弃牌',reason:std+'不在'+position+'加注范围内，面对'+betSize+'BB加注应弃牌',action:'fold'};
-    }else{return{...result,decision:strength>=88?'跟注/加注':'弃牌',reason:strength>=88?std+'很强可以跟注或加注':std+'强度不够面对大加注应弃牌',action:strength>=88?'call':'fold'};}
-  }
-  if(inRange){var size=potType==='single'?3:4;return{...result,decision:'加注',reason:std+'在'+position+'加注范围内，建议加注'+size+'BB',action:'raise',suggestedSize:size+'BB'};}
-  else if(strength>=65){return{...result,decision:'跟注',reason:std+'价值一般，平跟看翻牌',action:'call'};}
-  return{...result,decision:'弃牌',reason:std+'太弱，'+position+'应弃牌',action:'fold'};
+  hand=hand+hand2;
+  var bc=board.filter(function(c){return c&&c.length>=2;});
+  var eq=calcEquity(hand,bc);
+  var pct=(eq*100).toFixed(1);
+  document.getElementById('winRate').textContent=pct+'%';
+  var sub='手牌: '+stdHand(hand);
+  if(bc.length>0)sub+=' | 公共牌: '+bc.join(' ');
+  sub+=' | 胜率估算';
+  document.getElementById('subText').textContent=sub;
+  document.getElementById('result').classList.add('show');
 }
-
-function postflopDecision(result,action,betSize,potSize,SPR,texture,equity,potOdds,nOpponents){
-  var isWet=texture.wetness>=4;
-  var decision='过牌',reason='',actType='check',suggestedSize='';
-  if(['bet','raise'].indexOf(action)!==-1){
-    if(equity>=0.65){
-      if(SPR<=3){decision='All-in';reason='坚果牌('+(equity*100).toFixed(0)+'%)+低SPR('+SPR.toFixed(1)+')，直接推！';actType='shove';}
-      else{decision='加注';reason='强牌('+(equity*100).toFixed(0)+'%)，加注获取价值';actType='raise';suggestedSize=Math.floor(potSize*0.75)+'-'+Math.floor(potSize*1)+'BB';}
-    }else if(equity>=0.40){
-      if(potOdds>=0.33){decision='跟注';reason='中等强度('+(equity*100).toFixed(0)+'%)，底池赔率'+(potOdds*100).toFixed(0)+'%合适，可以跟注';actType='call';}
-      else if(isWet&&nOpponents>=2){decision='弃牌';reason='湿润牌面('+texture.texture+')+多头池，赔率不够应弃牌';actType='fold';}
-      else{decision='跟注';reason='中等强度，赔率'+(potOdds*100).toFixed(0)+'%勉强可以';actType='call';}
-    }else{
-      if((texture.flushPossible||texture.straightPossible)&&potOdds>=0.25&&equity>=0.25){decision='跟注';reason='听牌+赔率'+(potOdds*100).toFixed(0)+'%，值得跟注';actType='call';}
-      else if(texture.flushPossible||texture.straightPossible){decision='弃牌';reason='有听牌但赔率不够('+(potOdds*100).toFixed(0)+'%)';actType='fold';}
-      else{decision='弃牌';reason='弱牌('+(equity*100).toFixed(0)+'%)，无听牌，应弃牌';actType='fold';}
-    }
-  }else if(['check','call'].indexOf(action)!==-1){
-    if(equity>=0.60){decision='下注';reason='强牌('+(equity*100).toFixed(0)+'%)，下注获取价值';actType='bet';suggestedSize=Math.floor(potSize*0.65)+'-'+Math.floor(potSize*0.75)+'BB';}
-    else if(equity>=0.40){
-      if(isWet){decision='过牌';reason='湿润牌面('+texture.texture+')，谨慎控池过牌';actType='check';}
-      else{decision='下注';reason='中等强度，可下注获取薄价值';actType='bet';suggestedSize=Math.floor(potSize*0.5)+'BB';}
-    }else if(equity>=0.30){
-      if(texture.flushPossible||texture.straightPossible){decision='过牌';reason='听牌观望，过牌控池';actType='check';}
-      else{decision='过牌';reason='弱牌放弃';actType='check';}
-    }else{decision='过牌';reason='很弱，过牌';actType='check';}
-  }
-  var detail='牌面: '+texture.texture;
-  if(texture.paired)detail+='/有对子';
-  if(texture.flushPossible)detail+='/同花可能';
-  if(texture.straightPossible)detail+='/顺子可能';
-  return{...result,decision:decision,reason:reason,action:actType,suggestedSize:suggestedSize,equityDetail:'胜率: '+(equity*100).toFixed(1)+'%',textureDetail:detail};
-}
-
-init();
 </script>
 </body>
 </html>
