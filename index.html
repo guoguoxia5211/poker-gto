@@ -3,62 +3,60 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>德州GTO助手</title>
+<title>Poker GTO</title>
 <style>
-:root{--bg:#0a0e17;--card:#131a2b;--border:#1e2a42;--input:#1a2332;--text:#e8f0ff;--dim:#6b7fa3;--green:#00d26a;--red:#ff4757;--blue:#3b82f6;--yellow:#fbbf24;--purple:#a78bfa}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:12px;padding-bottom:80px}
-.header{text-align:center;padding:16px 0;border-bottom:1px solid var(--border);margin-bottom:16px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e17;color:#e8f0ff;min-height:100vh;padding:12px;padding-bottom:80px}
+.header{text-align:center;padding:16px 0;border-bottom:1px solid #1e2a42;margin-bottom:16px}
 .header h1{font-size:20px;font-weight:700}
-.header p{color:var(--dim);font-size:12px;margin-top:4px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
-.label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.header p{color:#6b7fa3;font-size:12px;margin-top:4px}
+.card{background:#131a2b;border:1px solid #1e2a42;border-radius:12px;padding:14px;margin-bottom:12px}
+.label{font-size:11px;color:#6b7fa3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
 .hand-row{display:flex;gap:8px}
-.card-slot{flex:1;height:54px;background:var(--input);border:2px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;cursor:pointer;transition:all .15s}
-.card-slot:hover{border-color:var(--blue)}
-.card-slot.active{border-color:var(--green);background:rgba(0,210,106,.08)}
+.card-slot{flex:1;height:54px;background:#1a2332;border:2px solid #1e2a42;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;cursor:pointer;transition:all .15s}
+.card-slot:hover{border-color:#3b82f6}
+.card-slot.active{border-color:#00d26a;background:rgba(0,210,106,.08)}
 .suit-row{display:flex;gap:6px;margin-top:8px}
-.suit-btn{flex:1;height:40px;background:var(--input);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:15px;cursor:pointer}
+.suit-btn{flex:1;height:40px;background:#1a2332;border:1px solid #1e2a42;border-radius:8px;color:#e8f0ff;font-size:15px;cursor:pointer}
 .board-row{display:flex;gap:6px}
-.board-slot{width:46px;height:46px;background:var(--input);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;cursor:pointer;flex-shrink:0}
-.board-slot.filled{border-color:var(--blue);background:rgba(59,130,246,.1)}
-.board-slot.flop3{width:56px}
-select,input{width:100%;height:44px;background:var(--input);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:15px;padding:0 10px;margin-bottom:10px}
-select:focus,input:focus{outline:none;border-color:var(--blue)}
+.board-slot{width:46px;height:46px;background:#1a2332;border:1px solid #1e2a42;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;cursor:pointer;flex-shrink:0}
+.board-slot.active{border-color:#3b82f6;background:rgba(59,130,246,.1)}
+select,input{width:100%;height:44px;background:#1a2332;border:1px solid #1e2a42;border-radius:8px;color:#e8f0ff;font-size:15px;padding:0 10px;margin-bottom:10px}
+select:focus,input:focus{outline:none;border-color:#3b82f6}
 .row{display:flex;gap:10px}
 .row>div{flex:1}
-.btn{width:100%;height:50px;background:linear-gradient(135deg,var(--green),#00a854);border:none;border-radius:10px;color:#000;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn{width:100%;height:50px;background:linear-gradient(135deg,#00d26a,#00a854);border:none;border-radius:10px;color:#000;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px}
 .btn:active{transform:scale(.98)}
-.result{margin-top:16px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;display:none}
+.result{margin-top:16px;padding:16px;background:#131a2b;border:1px solid #1e2a42;border-radius:12px;display:none}
 .result.show{display:block;animation:fadeIn .3s}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .decision{font-size:26px;font-weight:800;text-align:center;margin-bottom:10px}
-.decision.call{color:var(--green)}
-.decision.fold{color:var(--red)}
-.decision.raise{color:var(--blue)}
-.decision.check{color:var(--yellow)}
-.reason{color:var(--dim);font-size:14px;line-height:1.5;text-align:center;margin-bottom:12px}
+.decision.call{color:#00d26a}
+.decision.fold{color:#ff4757}
+.decision.raise{color:#3b82f6}
+.decision.check{color:#fbbf24}
+.reason{color:#6b7fa3;font-size:14px;line-height:1.5;text-align:center;margin-bottom:12px}
 .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.info{background:var(--input);padding:10px;border-radius:8px}
-.info-label{font-size:10px;color:var(--dim);text-transform:uppercase}
+.info{background:#1a2332;padding:10px;border-radius:8px}
+.info-label{font-size:10px;color:#6b7fa3;text-transform:uppercase}
 .info-value{font-size:15px;font-weight:600;margin-top:2px}
-.detail{margin-top:10px;padding:10px;background:rgba(167,139,250,.1);border:1px solid var(--purple);border-radius:8px;font-size:12px;color:var(--purple);line-height:1.5}
+.detail{margin-top:10px;padding:10px;background:rgba(167,139,250,.1);border:1px solid #a78bfa;border-radius:8px;font-size:12px;color:#a78bfa;line-height:1.5}
 .rank-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;z-index:1000;padding:20px;align-items:center;justify-content:center}
 .rank-modal.active{display:flex;flex-direction:column}
 .rank-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:280px;width:100%}
-.rank-btn{height:50px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:18px;font-weight:600;cursor:pointer;width:100%}
-.rank-btn:active{background:var(--border)}
-.footer{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--border);padding:10px 16px;text-align:center;color:var(--dim);font-size:11px}
+.rank-btn{height:50px;background:#131a2b;border:1px solid #1e2a42;border-radius:8px;color:#e8f0ff;font-size:18px;font-weight:600;cursor:pointer;width:100%}
+.rank-btn:active{background:#1e2a42}
+.footer{position:fixed;bottom:0;left:0;right:0;background:#0a0e17;border-top:1px solid #1e2a42;padding:10px 16px;text-align:center;color:#6b7fa3;font-size:11px}
 </style>
 </head>
 <body>
-<div class="header"><h1>德州 GTO 助手</h1><p>6人桌 · GTO策略分析</p></div>
+<div class="header"><h1>Poker GTO</h1><p>6-max / GTO Strategy</p></div>
 
 <div class="card">
-<div class="label">手牌</div>
+<div class="label">HAND</div>
 <div class="hand-row">
-<div class="card-slot" id="h1" onclick="pickCard(1)">第1张</div>
-<div class="card-slot" id="h2" onclick="pickCard(2)">第2张</div>
+<div class="card-slot" id="h1" onclick="pickCard(1)">H1</div>
+<div class="card-slot" id="h2" onclick="pickCard(2)">H2</div>
 </div>
 <div class="suit-row" id="suitBtns" style="display:none;">
 <button class="suit-btn" onclick="pickSuit('s')">S</button>
@@ -69,18 +67,18 @@ select:focus,input:focus{outline:none;border-color:var(--blue)}
 </div>
 
 <div class="card">
-<div class="label">公共牌</div>
+<div class="label">BOARD</div>
 <div class="board-row">
-<div class="board-slot flop3" id="b0" onclick="pickBoard(0)"></div>
-<div class="board-slot flop3" id="b1" onclick="pickBoard(1)"></div>
-<div class="board-slot flop3" id="b2" onclick="pickBoard(2)"></div>
+<div class="board-slot" id="b0" onclick="pickBoard(0)">F1</div>
+<div class="board-slot" id="b1" onclick="pickBoard(1)">F2</div>
+<div class="board-slot" id="b2" onclick="pickBoard(2)">F3</div>
 <div class="board-slot" id="b3" onclick="pickBoard(3)">T</div>
 <div class="board-slot" id="b4" onclick="pickBoard(4)">R</div>
 </div>
 </div>
 
 <div class="card">
-<div class="label">位置</div>
+<div class="label">POSITION</div>
 <select id="position">
 <option value="UTG">UTG</option>
 <option value="MP">MP</option>
@@ -90,45 +88,45 @@ select:focus,input:focus{outline:none;border-color:var(--blue)}
 <option value="BB">BB</option>
 </select>
 
-<div class="label" style="margin-top:8px">对手数量</div>
+<div class="label" style="margin-top:8px">OPPONENTS</div>
 <select id="nOpponents">
-<option value="1">1个对手</option>
-<option value="2">2个对手</option>
-<option value="3">3+个对手</option>
+<option value="1">1 Opponent</option>
+<option value="2">2 Opponents</option>
+<option value="3">3+ Opponents</option>
 </select>
 
-<div class="label" style="margin-top:8px">底池类型</div>
+<div class="label" style="margin-top:8px">POT TYPE</div>
 <select id="potType">
-<option value="single">单次加注</option>
-<option value="3bet">3bet底池</option>
-<option value="4bet+">4bet+底池</option>
+<option value="single">Single Raised</option>
+<option value="3bet">3-bet Pot</option>
+<option value="4bet+">4-bet+ Pot</option>
 </select>
 
-<div class="label" style="margin-top:8px">对手行动</div>
+<div class="label" style="margin-top:8px">OPP ACTION</div>
 <select id="action">
-<option value="check">过牌</option>
-<option value="bet">下注</option>
-<option value="raise">加注</option>
-<option value="call">跟注</option>
+<option value="check">Check</option>
+<option value="bet">Bet</option>
+<option value="raise">Raise</option>
+<option value="call">Call</option>
 </select>
 
 <div class="row">
 <div>
-<div class="label">下注(BB)</div>
+<div class="label">BET (BB)</div>
 <input type="number" id="betSize" value="0" min="0">
 </div>
 <div>
-<div class="label">底池(BB)</div>
+<div class="label">POT (BB)</div>
 <input type="number" id="potSize" value="10" min="1">
 </div>
 </div>
 <div>
-<div class="label">筹码(BB)</div>
+<div class="label">STACK (BB)</div>
 <input type="number" id="stackSize" value="100" min="1">
 </div>
 </div>
 
-<button class="btn" onclick="analyze()">开始分析</button>
+<button class="btn" onclick="analyze()">ANALYZE</button>
 
 <div class="result" id="result">
 <div class="decision" id="decision"></div>
@@ -141,17 +139,165 @@ select:focus,input:focus{outline:none;border-color:var(--blue)}
 <div class="rank-grid" id="rankGrid"></div>
 </div>
 
-<div class="footer">Poker GTO / 所有计算在浏览器内完成，无需服务器</div>
+<div class="footer">Poker GTO / All calculation runs in your browser</div>
 
 <script>
-// ============ GTO Engine (Pure JS) ============
+var RANKS=['A','K','Q','J','T','9','8','7','6','5','4','3','2'];
+var SUIT_DISP={s:'\u2660',h:'\u2665',d:'\u2666',c:'\u2663'};
+var SUIT_COL={s:'#e8f0ff',h:'#ff6b6b',d:'#ff6b6b',c:'#e8f0ff'};
 
-const POCKET_PAIRS = {
+var pickTarget=null;
+var h1={r:'',s:''}, h2={r:'',s:''};
+var board=['','','','',''];
+var pickingBoard=-1;
+
+function init(){
+  var g=document.getElementById('rankGrid');
+  for(var i=0;i<RANKS.length;i++){
+    var r=RANKS[i];
+    var b=document.createElement('button');
+    b.className='rank-btn';
+    b.textContent=r;
+    b.onclick=(function(rv){return function(){selectRank(rv);};})(r);
+    g.appendChild(b);
+  }
+  updateBoardDisplay();
+}
+
+function pickCard(n){pickTarget=n;pickingBoard=-1;document.getElementById('rankModal').classList.add('active');}
+function pickBoard(idx){pickTarget=-1;pickingBoard=idx;document.getElementById('rankModal').classList.add('active');}
+
+function selectRank(rank){
+  document.getElementById('rankModal').classList.remove('active');
+  document.getElementById('suitBtns').style.display='flex';
+  if(pickingBoard>=0){
+    board[pickingBoard]=rank;
+  }else if(pickTarget===1){
+    h1.r=rank;
+  }else if(pickTarget===2){
+    h2.r=rank;
+  }
+  updateDisplay();
+}
+
+function pickSuit(suit){
+  document.getElementById('suitBtns').style.display='none';
+  if(pickingBoard>=0){
+    board[pickingBoard]+=suit;
+  }else if(pickTarget===1){
+    h1.s=suit;
+  }else if(pickTarget===2){
+    h2.s=suit;
+  }
+  updateDisplay();
+}
+
+function updateDisplay(){
+  updateHand('h1',h1);
+  updateHand('h2',h2);
+  updateBoardDisplay();
+}
+
+function updateHand(id,card){
+  var el=document.getElementById(id);
+  if(card.r){
+    el.textContent=card.r+(SUIT_DISP[card.s]||'?');
+    el.style.color=SUIT_COL[card.s]||'#e8f0ff';
+    el.classList.add('active');
+  }else{
+    el.textContent=id.toUpperCase();
+    el.style.color='#6b7fa3';
+    el.classList.remove('active');
+  }
+}
+
+function updateBoardDisplay(){
+  var labels=['F1','F2','F3','T','R'];
+  for(var i=0;i<5;i++){
+    var el=document.getElementById('b'+i);
+    var c=board[i];
+    if(c&&c.length>=2){
+      el.textContent=c[0]+SUIT_DISP[c[1]];
+      el.style.color=SUIT_COL[c[1]];
+      el.classList.add('active');
+    }else{
+      el.textContent=labels[i];
+      el.style.color='#6b7fa3';
+      el.classList.remove('active');
+    }
+  }
+}
+
+function getHand(){
+  if(!h1.r||!h1.s||!h2.r||!h2.s)return'';
+  return h1.r+h1.s+h2.r+h2.s;
+}
+
+function getBoardStr(){return board.filter(function(c){return c&&c.length>=2;}).join(' ');}
+
+function analyze(){
+  var hand=getHand();
+  if(!hand){alert('Select your hand first');return;}
+  var data={
+    hand:hand,
+    position:document.getElementById('position').value,
+    nOpponents:parseInt(document.getElementById('nOpponents').value),
+    potType:document.getElementById('potType').value,
+    action:document.getElementById('action').value,
+    betSize:parseFloat(document.getElementById('betSize').value)||0,
+    potSize:parseFloat(document.getElementById('potSize').value)||10,
+    stackSize:parseFloat(document.getElementById('stackSize').value)||100,
+    board:getBoardStr()
+  };
+  var d=gtoDecision(data);
+  showResult(d);
+}
+
+function showResult(d){
+  var r=document.getElementById('result');
+  r.classList.add('show');
+  var dec=document.getElementById('decision');
+  dec.textContent=d.decision||'';
+  var cls='decision ';
+  if(d.action==='call')cls+='call';
+  else if(d.action==='fold')cls+='fold';
+  else if(d.action==='raise'||d.action==='bet'||d.action==='shove')cls+='raise';
+  else cls+='check';
+  dec.className=cls;
+  document.getElementById('reason').textContent=d.reason||'';
+  var grid=document.getElementById('infoGrid');
+  grid.innerHTML='';
+  var items=[
+    ['Hand',d.hand||'-'],
+    ['Equity',d.equity||'-'],
+    ['SPR',d.SPR||'-'],
+    ['Pot Odds',d.potOdds||'-'],
+    ['Texture',d.texture||'-'],
+    ['Action',d.action?d.action.toUpperCase():'-']
+  ];
+  for(var i=0;i<items.length;i++){
+    var kv=items[i];
+    if(kv[1]&&kv[1]!=='-'){
+      grid.innerHTML+='<div class="info"><div class="info-label">'+kv[0]+'</div><div class="info-value">'+kv[1]+'</div></div>';
+    }
+  }
+  var detail=document.getElementById('detail');
+  var dt='';
+  if(d.textureDetail)dt+=d.textureDetail;
+  if(d.suggestedSize)dt+=(dt?' | ':'')+'Size: '+d.suggestedSize;
+  if(d.equityDetail)dt+=(dt?' | ':'')+d.equityDetail;
+  if(dt){detail.textContent=dt;detail.style.display='block';}else{detail.style.display='none';}
+  r.scrollIntoView({behavior:'smooth'});
+}
+
+// ============ GTO Engine ============
+
+var POCKET_PAIRS={
   'AA':100,'KK':99,'QQ':98,'JJ':97,'TT':95,'99':82,'88':78,'77':74,
   '66':70,'55':66,'44':62,'33':58,'22':54
 };
 
-const HIGH_CARDS = {
+var HIGH_CARDS={
   'AKs':96,'AQs':93,'AJs':90,'ATs':87,'A9s':84,'A8s':81,'A7s':78,'A6s':75,'A5s':80,'A4s':77,'A3s':74,'A2s':71,
   'AKo':94,'AQo':91,'AJo':88,'ATo':85,'A9o':82,'A8o':79,'A7o':76,'A6o':73,'A5o':78,'A4o':75,'A3o':72,'A2o':69,
   'KQs':87,'KJs':85,'KTs':82,'K9s':79,'K8s':76,'K7s':73,'K6s':70,'K5s':67,'K4s':64,'K3s':61,'K2s':58,
@@ -177,7 +323,7 @@ const HIGH_CARDS = {
   '32s':56,'32o':54,
 };
 
-const PREFLOP_RANGE = {
+var PREFLOP_RANGE={
   'UTG':['AA','KK','QQ','JJ','TT','AKs','AKo','AQs','AJs','ATs','KQs'],
   'MP':['AA','KK','QQ','JJ','TT','99','AKs','AKo','AQs','AJs','ATs','A9s','KQs','KJs','KTs','QJs','QTs','JTs'],
   'CO':['AA','KK','QQ','JJ','TT','99','88','77','AKs','AKo','AQs','AJs','ATs','A9s','A8s','KQs','KJs','KTs','K9s','QJs','QTs','Q9s','JTs','J9s','T9s','98s','87s','76s'],
@@ -186,338 +332,238 @@ const PREFLOP_RANGE = {
   'BB':['AA','KK','QQ','JJ','TT','99','88','77','66','55','44','33','22','AKs','AKo','AQs','AJs','ATs','A9s','A8s','A7s','A6s','A5s','A4s','A3s','A2s','KQs','KJs','KTs','K9s','K8s','K7s','QJs','QTs','Q9s','Q8s','JTs','J9s','J8s','T9s','T8s','98s','97s','87s','86s','76s','75s','65s','54s','43s','32s'],
 };
 
-function parseHand(handStr) {
-  handStr = handStr.toUpperCase().replace(/\s/g, '').replace(/,/g, '');
-  if (handStr.length >= 4) return [handStr.slice(0, 2), handStr.slice(2, 4)];
-  return [null, null];
+function parseHand(handStr){
+  handStr=handStr.toUpperCase().replace(/\s/g,'').replace(/,/g,'');
+  if(handStr.length>=4)return[handStr.slice(0,2),handStr.slice(2,4)];
+  return[null,null];
 }
 
-function parseBoard(boardStr) {
-  if (!boardStr) return [];
-  return boardStr.toUpperCase().replace(/,/g, ' ').split(/\s+/).filter(c => c.length >= 2);
+function parseBoard(boardStr){
+  if(!boardStr)return[];
+  return boardStr.toUpperCase().replace(/,/g,' ').split(/\s+/).filter(function(c){return c.length>=2;});
 }
 
-function getHandStrength(hand) {
-  const [c1, c2] = parseHand(hand);
-  if (!c1 || !c2) return 0;
-  const [r1, s1] = [c1[0], c1[1]];
-  const [r2, s2] = [c2[0], c2[1]];
-  if (r1 === r2) return POCKET_PAIRS[r1 + r2] || 50;
-  if (s1 === s2) return HIGH_CARDS[r1 + r2 + 's'] || 55;
-  return HIGH_CARDS[r1 + r2 + 'o'] || 50;
+function getHandStrength(hand){
+  var tmp=parseHand(hand);
+  var c1=tmp[0],c2=tmp[1];
+  if(!c1||!c2)return 0;
+  var r1=c1[0],s1=c1[1],r2=c2[0],s2=c2[1];
+  if(r1===r2)return POCKET_PAIRS[r1+r2]||50;
+  if(s1===s2)return HIGH_CARDS[r1+r2+'s']||55;
+  return HIGH_CARDS[r1+r2+'o']||50;
 }
 
-function stdHand(hand) {
-  const [c1, c2] = parseHand(hand);
-  if (!c1 || !c2) return '?';
-  if (c1[0] === c2[0]) return c1[0] + c2[0];
-  if (c1[1] === c2[1]) return c1[0] + c2[0] + 's';
-  return c1[0] + c2[0] + 'o';
+function stdHand(hand){
+  var tmp=parseHand(hand);
+  var c1=tmp[0],c2=tmp[1];
+  if(!c1||!c2)return'?';
+  if(c1[0]===c2[0])return c1[0]+c2[0];
+  if(c1[1]===c2[1])return c1[0]+c2[0]+'s';
+  return c1[0]+c2[0]+'o';
 }
 
-function getRankValue(rank) {
-  const v = {'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'T':10,'J':11,'Q':12,'K':13,'A':14};
-  return v[rank] || 0;
+function getRankValue(rank){
+  var v={'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'T':10,'J':11,'Q':12,'K':13,'A':14};
+  return v[rank]||0;
 }
 
-function analyzeBoardTexture(boardCards) {
-  if (!boardCards || boardCards.length === 0) return {texture:'dry',paired:false,flushPossible:false,straightPossible:false,wetness:0};
-  const ranks = boardCards.map(c => c[0]);
-  const suits = boardCards.map(c => c[1]);
-  const paired = (new Set(ranks)).size < ranks.length;
-  const suitCounts = {};
-  suits.forEach(s => suitCounts[s] = (suitCounts[s] || 0) + 1);
-  const flushPossible = Object.values(suitCounts).some(c => c >= 3);
-  const rankVals = ranks.map(getRankValue).sort((a,b) => a-b);
-  let straightPossible = false;
-  if (rankVals.length >= 3) {
-    for (let i = 0; i < rankVals.length - 2; i++) {
-      if (rankVals[i+2] - rankVals[i] <= 4) { straightPossible = true; break; }
+function analyzeBoardTexture(boardCards){
+  if(!boardCards||boardCards.length===0)return{texture:'dry',paired:false,flushPossible:false,straightPossible:false,wetness:0};
+  var ranks=boardCards.map(function(c){return c[0];});
+  var suits=boardCards.map(function(c){return c[1];});
+  var paired=(new Set(ranks)).size<ranks.length;
+  var suitCounts={};
+  for(var i=0;i<suits.length;i++){var s=suits[i];suitCounts[s]=(suitCounts[s]||0)+1;}
+  var flushPossible=false;
+  for(var k in suitCounts){if(suitCounts[k]>=3){flushPossible=true;break;}}
+  var rankVals=ranks.map(getRankValue).sort(function(a,b){return a-b;});
+  var straightPossible=false;
+  if(rankVals.length>=3){
+    for(var j=0;j<rankVals.length-2;j++){
+      if(rankVals[j+2]-rankVals[j]<=4){straightPossible=true;break;}
     }
   }
-  let wetness = 0;
-  if (flushPossible) wetness += 2;
-  if (straightPossible) wetness += 2;
-  if (paired) wetness += 1;
-  if (boardCards.length >= 4) wetness += 1;
-  if (boardCards.length >= 5) wetness += 2;
-  const texture = wetness <= 2 ? 'dry' : wetness <= 4 ? 'medium' : 'wet';
-  return {texture, paired, flushPossible, straightPossible, wetness};
+  var wetness=0;
+  if(flushPossible)wetness+=2;
+  if(straightPossible)wetness+=2;
+  if(paired)wetness+=1;
+  if(boardCards.length>=4)wetness+=1;
+  if(boardCards.length>=5)wetness+=2;
+  var texture=wetness<=2?'dry':wetness<=4?'medium':'wet';
+  return{texture:texture,paired:paired,flushPossible:flushPossible,straightPossible:straightPossible,wetness:wetness};
 }
 
-function estimateEquity(hand, boardCards, nOpponents = 1) {
-  let base = getHandStrength(hand);
-  if (!boardCards || boardCards.length === 0) {
-    if (nOpponents === 1) return base / 100;
-    if (nOpponents === 2) return (base - 10) / 100;
-    return (base - 15) / 100;
+function estimateEquity(hand,boardCards,nOpponents){
+  nOpponents=nOpponents||1;
+  var base=getHandStrength(hand);
+  if(!boardCards||boardCards.length===0){
+    if(nOpponents===1)return base/100;
+    if(nOpponents===2)return(base-10)/100;
+    return(base-15)/100;
   }
-  const [c1, c2] = parseHand(hand);
-  if (!c1 || !c2) return 0.3;
-  const [r1, s1] = [c1[0], c1[1]];
-  const [r2, s2] = [c2[0], c2[1]];
-  const hasPair = r1 === r2;
-  const boardRanks = boardCards.map(c => c[0]);
-  const boardSuits = boardCards.map(c => c[1]);
-  let strength = base;
-  if (hasPair && boardRanks.some(r => r === r1)) strength = Math.min(100, strength + 20);
-  const suitedCount = [s1, s2].filter(s => boardSuits.filter(bs => bs === s).length >= 1).length;
-  const texture = analyzeBoardTexture(boardCards);
-  if (suitedCount >= 1 && texture.flushPossible) strength += 10;
-  if (suitedCount >= 2) strength += 15;
-  const allRanks = [r1, r2, ...boardRanks].map(getRankValue);
-  const uniqueSorted = [...new Set(allRanks)].sort((a,b) => a-b);
-  if (uniqueSorted.length >= 4) {
-    for (let i = 0; i < uniqueSorted.length - 3; i++) {
-      if (uniqueSorted[i+3] - uniqueSorted[i] <= 4) { strength += 12; break; }
+  var tmp=parseHand(hand);
+  var c1=tmp[0],c2=tmp[1];
+  if(!c1||!c2)return 0.3;
+  var r1=c1[0],s1=c1[1],r2=c2[0],s2=c2[1];
+  var hasPair=r1===r2;
+  var boardRanks=boardCards.map(function(c){return c[0];});
+  var boardSuits=boardCards.map(function(c){return c[1];});
+  var strength=base;
+  if(hasPair&&boardRanks.some(function(r){return r===r1;}))strength=Math.min(100,strength+20);
+  var suitedCount=0;
+  for(var si=0;si<2;si++){
+    var ss=si===0?s1:s2;
+    if(boardSuits.filter(function(bs){return bs===ss;}).length>=1)suitedCount++;
+  }
+  var texture=analyzeBoardTexture(boardCards);
+  if(suitedCount>=1&&texture.flushPossible)strength+=10;
+  if(suitedCount>=2)strength+=15;
+  var allRanks=[r1,r2].concat(boardRanks).map(getRankValue);
+  var uniqueSorted=[...new Set(allRanks)].sort(function(a,b){return a-b;});
+  if(uniqueSorted.length>=4){
+    for(var k=0;k<uniqueSorted.length-3;k++){
+      if(uniqueSorted[k+3]-uniqueSorted[k]<=4){strength+=12;break;}
     }
   }
-  if (texture.wetness >= 4 && !hasPair && suitedCount < 2) strength -= 15;
-  strength = Math.max(5, Math.min(95, strength));
-  if (nOpponents >= 3) strength -= 10;
-  else if (nOpponents >= 2) strength -= 5;
-  return strength / 100;
+  if(texture.wetness>=4&&!hasPair&&suitedCount<2)strength-=15;
+  strength=Math.max(5,Math.min(95,strength));
+  if(nOpponents>=3)strength-=10;
+  else if(nOpponents>=2)strength-=5;
+  return strength/100;
 }
 
-function gtoDecision(data) {
-  const {hand='', position='BTN', action='check', betSize=0, potSize=10, board='', stackSize=100, nOpponents=1, potType='single'} = data;
-  const boardCards = parseBoard(board);
-  const [c1, c2] = parseHand(hand);
-  if (!c1 || !c2) return {decision:'Format Error', reason:'Invalid hand'};
-  const std = stdHand(hand);
-  const SPR = potSize > 0 ? stackSize / potSize : 99;
-  const texture = analyzeBoardTexture(boardCards);
-  const equity = estimateEquity(hand, boardCards, nOpponents);
-  const potOdds = betSize > 0 ? betSize / (potSize + betSize) : 0;
-  const result = {
-    hand: std, position, board: boardCards, nOpponents, potType,
-    equity: `${(equity * 100).toFixed(1)}%`,
-    baseStrength: getHandStrength(hand),
-    SPR: SPR.toFixed(1),
-    potOdds: betSize > 0 ? `${(potOdds * 100).toFixed(1)}%` : null,
-    texture: texture.texture,
+function gtoDecision(data){
+  var hand=data.hand||'',position=data.position||'BTN',action=data.action||'check';
+  var betSize=parseFloat(data.betSize)||0,potSize=parseFloat(data.potSize)||10;
+  var board=data.board||'',stackSize=parseFloat(data.stackSize)||100;
+  var nOpponents=parseInt(data.nOpponents)||1,potType=data.potType||'single';
+
+  var boardCards=parseBoard(board);
+  var tmp=parseHand(hand);
+  var c1=tmp[0],c2=tmp[1];
+  if(!c1||!c2)return{decision:'Format Error',reason:'Invalid hand'};
+  var std=stdHand(hand);
+  var SPR=potSize>0?stackSize/potSize:99;
+  var texture=analyzeBoardTexture(boardCards);
+  var equity=estimateEquity(hand,boardCards,nOpponents);
+  var potOdds=betSize>0?betSize/(potSize+betSize):0;
+
+  var result={
+    hand:std,position:position,board:boardCards,nOpponents:nOpponents,potType:potType,
+    equity:(equity*100).toFixed(1)+'%',
+    baseStrength:getHandStrength(hand),
+    SPR:SPR.toFixed(1),
+    potOdds:betSize>0?(potOdds*100).toFixed(1)+'%':null,
+    texture:texture.texture,
   };
-  if (!boardCards || boardCards.length === 0) return preflopDecision(result, hand, position, action, betSize, potType);
-  return postflopDecision(result, action, betSize, potSize, SPR, texture, equity, potOdds, nOpponents);
+
+  if(!boardCards||boardCards.length===0){
+    return preflopDecision(result,hand,position,action,betSize,potType);
+  }
+  return postflopDecision(result,action,betSize,potSize,SPR,texture,equity,potOdds,nOpponents);
 }
 
-function preflopDecision(result, hand, position, action, betSize, potType) {
-  const std = stdHand(hand);
-  const strength = getHandStrength(hand);
-  const raiseRange = PREFLOP_RANGE[position.toUpperCase()] || PREFLOP_RANGE['BTN'];
-  const inRange = raiseRange.includes(std);
-  if (['3bet', '4bet+'].includes(potType)) {
-    return {...result, decision: strength >= 88 ? '跟注' : 'Fold',
-      reason: strength >= 88 ? `${std} strong enough for ${potType}` : `${std} not strong enough for ${potType}`,
-      action: strength >= 88 ? 'call' : 'fold'};
+function preflopDecision(result,hand,position,action,betSize,potType){
+  var std=stdHand(hand);
+  var strength=getHandStrength(hand);
+  var raiseRange=PREFLOP_RANGE[position.toUpperCase()]||PREFLOP_RANGE['BTN'];
+  var inRange=raiseRange.indexOf(std)!==-1;
+  if(['3bet','4bet+'].indexOf(potType)!==-1){
+    return{...result,decision:strength>=88?'Call':'Fold',
+      reason:strength>=88?std+' strong enough for '+potType:std+' not strong enough for '+potType,
+      action:strength>=88?'call':'fold'};
   }
-  if (['bet', 'raise', '3bet'].includes(action)) {
-    if (betSize <= 3) {
-      if (inRange || strength >= 78) {
-        return {...result, decision:'跟注', reason:`${std} in ${position} range, ${betSize}BB worth calling`, action:'call'};
+  if(['bet','raise','3bet'].indexOf(action)!==-1){
+    if(betSize<=3){
+      if(inRange||strength>=78){
+        return{...result,decision:'Call',reason:std+' in '+position+' range, '+betSize+'BB worth calling',action:'call'};
       }
-      return {...result, decision:'Fold', reason:`${std} not in ${position} range, fold vs ${betSize}BB`, action:'fold'};
-    } else {
-      return {...result, decision: strength >= 88 ? '跟注/加注' : 'Fold',
-        reason: strength >= 88 ? `${std} is strong, can call or raise` : `${std} not strong enough for large raise`,
-        action: strength >= 88 ? 'call' : 'fold'};
+      return{...result,decision:'Fold',reason:std+' not in '+position+' range, fold vs '+betSize+'BB',action:'fold'};
+    }else{
+      return{...result,decision:strength>=88?'Call/Raise':'Fold',
+        reason:strength>=88?std+' is strong, can call or raise':std+' not strong enough for large raise',
+        action:strength>=88?'call':'fold'};
     }
   }
-  if (inRange) {
-    const size = potType === 'single' ? 3 : 4;
-    return {...result, decision:'加注', reason:`${std} in ${position} raise range, suggest ${size}BB`, action:'raise', suggestedSize:`${size}BB`};
-  } else if (strength >= 65) {
-    return {...result, decision:'跟注', reason:`${std} marginal, flat to see flop`, action:'call'};
+  if(inRange){
+    var size=potType==='single'?3:4;
+    return{...result,decision:'Raise',reason:std+' in '+position+' raise range, suggest '+size+'BB',action:'raise',suggestedSize:size+'BB'};
+  }else if(strength>=65){
+    return{...result,decision:'Call',reason:std+' marginal, flat to see flop',action:'call'};
   }
-  return {...result, decision:'Fold', reason:`${std} too weak for ${position}`, action:'fold'};
+  return{...result,decision:'Fold',reason:std+' too weak for '+position,action:'fold'};
 }
 
-function postflopDecision(result, action, betSize, potSize, SPR, texture, equity, potOdds, nOpponents) {
-  const isWet = texture.wetness >= 4;
-  let decision='过牌', reason='', actType='check', suggestedSize='';
-  if (['bet', 'raise'].includes(action)) {
-    if (equity >= 0.65) {
-      if (SPR <= 3) {
-        decision='All-in'; reason=`Nut hand (${(equity*100).toFixed(0)}%) + low SPR (${SPR.toFixed(1)}), shove!`;
+function postflopDecision(result,action,betSize,potSize,SPR,texture,equity,potOdds,nOpponents){
+  var isWet=texture.wetness>=4;
+  var decision='Check',reason='',actType='check',suggestedSize='';
+
+  if(['bet','raise'].indexOf(action)!==-1){
+    if(equity>=0.65){
+      if(SPR<=3){
+        decision='All-in';reason='Nut hand ('+(equity*100).toFixed(0)+'%) + low SPR ('+SPR.toFixed(1)+'), shove!';
         actType='shove';
-      } else {
-        decision='加注'; reason=`Strong hand (${(equity*100).toFixed(0)}%), raise for value`;
+      }else{
+        decision='Raise';reason='Strong hand ('+(equity*100).toFixed(0)+'%), raise for value';
         actType='raise';
-        suggestedSize=`${Math.floor(potSize * 0.75)}-${Math.floor(potSize * 1)}BB`;
+        suggestedSize=Math.floor(potSize*0.75)+'-'+Math.floor(potSize*1)+'BB';
       }
-    } else if (equity >= 0.40) {
-      if (potOdds >= 0.33) {
-        decision='跟注'; reason=`Medium strength (${(equity*100).toFixed(0)}%), pot odds ${(potOdds*100).toFixed(0)}% justify call`;
+    }else if(equity>=0.40){
+      if(potOdds>=0.33){
+        decision='Call';reason='Medium strength ('+(equity*100).toFixed(0)+'%), pot odds '+(potOdds*100).toFixed(0)+'% justify call';
         actType='call';
-      } else if (isWet && nOpponents >= 2) {
-        decision='Fold'; reason=`Wet board (${texture.texture}) + multiway, odds too poor to call`;
+      }else if(isWet&&nOpponents>=2){
+        decision='Fold';reason='Wet board ('+texture.texture+') + multiway, odds too poor to call';
         actType='fold';
-      } else {
-        decision='跟注'; reason=`Marginal, pot odds ${(potOdds*100).toFixed(0)}% borderline`;
+      }else{
+        decision='Call';reason='Marginal, pot odds '+(potOdds*100).toFixed(0)+'% borderline';
         actType='call';
       }
-    } else {
-      if ((texture.flushPossible || texture.straightPossible) && potOdds >= 0.25 && equity >= 0.25) {
-        decision='跟注'; reason=`Draw + ${(potOdds*100).toFixed(0)}% odds, worth calling`;
+    }else{
+      if((texture.flushPossible||texture.straightPossible)&&potOdds>=0.25&&equity>=0.25){
+        decision='Call';reason='Draw + '+(potOdds*100).toFixed(0)+'% odds, worth calling';
         actType='call';
-      } else if (texture.flushPossible || texture.straightPossible) {
-        decision='Fold'; reason=`Draw but odds insufficient (${(potOdds*100).toFixed(0)}%)`;
+      }else if(texture.flushPossible||texture.straightPossible){
+        decision='Fold';reason='Draw but odds insufficient ('+(potOdds*100).toFixed(0)+'%)';
         actType='fold';
-      } else {
-        decision='Fold'; reason=`Weak hand (${(equity*100).toFixed(0)}%), no draws, fold`;
+      }else{
+        decision='Fold';reason='Weak hand ('+(equity*100).toFixed(0)+'%), no draws, fold';
         actType='fold';
       }
     }
-  } else if (['check', 'call'].includes(action)) {
-    if (equity >= 0.60) {
-      decision='下注'; reason=`Strong hand (${(equity*100).toFixed(0)}%), bet for value`;
+  }else if(['check','call'].indexOf(action)!==-1){
+    if(equity>=0.60){
+      decision='Bet';reason='Strong hand ('+(equity*100).toFixed(0)+'%), bet for value';
       actType='bet';
-      suggestedSize=`${Math.floor(potSize * 0.65)}-${Math.floor(potSize * 0.75)}BB`;
-    } else if (equity >= 0.40) {
-      if (isWet) {
-        decision='过牌'; reason=`Wet board (${texture.texture}), play cautiously`;
+      suggestedSize=Math.floor(potSize*0.65)+'-'+Math.floor(potSize*0.75)+'BB';
+    }else if(equity>=0.40){
+      if(isWet){
+        decision='Check';reason='Wet board ('+texture.texture+'), play cautiously';
         actType='check';
-      } else {
-        decision='下注'; reason=`Medium strength, thin value bet`;
+      }else{
+        decision='Bet';reason='Medium strength, thin value bet';
         actType='bet';
-        suggestedSize=`${Math.floor(potSize * 0.5)}BB`;
+        suggestedSize=Math.floor(potSize*0.5)+'BB';
       }
-    } else if (equity >= 0.30) {
-      if (texture.flushPossible || texture.straightPossible) {
-        decision='过牌'; reason=`Drawing hand, check to control pot`;
+    }else if(equity>=0.30){
+      if(texture.flushPossible||texture.straightPossible){
+        decision='Check';reason='Drawing hand, check to control pot';
         actType='check';
-      } else {
-        decision='过牌'; reason=`Weak hand, check and give up`;
+      }else{
+        decision='Check';reason='Weak hand, check and give up';
         actType='check';
       }
-    } else {
-      decision='过牌'; reason=`Very weak, check/fold`;
+    }else{
+      decision='Check';reason='Very weak, check/fold';
       actType='check';
     }
   }
-  let detail = `Board: ${texture.texture}`;
-  if (texture.paired) detail += '/paired';
-  if (texture.flushPossible) detail += '/flush possible';
-  if (texture.straightPossible) detail += '/straight possible';
-  return {...result, decision, reason, action: actType, suggestedSize, equityDetail:`Equity: ${(equity*100).toFixed(1)}%`, textureDetail:detail};
-}
-
-// ============ UI ============
-
-const RANKS=['A','K','Q','J','T','9','8','7','6','5','4','3','2'];
-const SUIT_DISP={s:'♠',h:'♥',d:'♦',c:'♣'};
-const SUIT_COL={s:'#e8f0ff',h:'#ff6b6b',d:'#ff6b6b',c:'#e8f0ff'};
-
-let pickTarget=null;
-let h1={r:'',s:''}, h2={r:'',s:''};
-let board=['','','','',''];
-let pickingBoard=-1;
-
-function init(){
-  const g=document.getElementById('rankGrid');
-  RANKS.forEach(r=>{
-    const b=document.createElement('button');
-    b.className='rank-btn';
-    b.textContent=r;
-    b.onclick=()=>selectRank(r);
-    g.appendChild(b);
-  });
-  updateBoardDisplay();
-}
-
-function pickCard(n){pickTarget=n;pickingBoard=-1;document.getElementById('rankModal').classList.add('active');}
-function pickBoard(idx){pickTarget=-1;pickingBoard=idx;document.getElementById('rankModal').classList.add('active');}
-
-function selectRank(rank){
-  document.getElementById('rankModal').classList.remove('active');
-  document.getElementById('suitBtns').style.display='flex';
-  if(pickingBoard>=0){board[pickingBoard]=rank;}
-  else if(pickTarget===1){h1.r=rank;}
-  else if(pickTarget===2){h2.r=rank;}
-  updateDisplay();
-}
-
-function pickSuit(suit){
-  document.getElementById('suitBtns').style.display='none';
-  if(pickingBoard>=0){board[pickingBoard]+=suit;}
-  else if(pickTarget===1){h1.s=suit;}
-  else if(pickTarget===2){h2.s=suit;}
-  updateDisplay();
-}
-
-function updateDisplay(){
-  updateHand('h1',h1);updateHand('h2',h2);updateBoardDisplay();
-}
-
-function updateHand(id,card){
-  const el=document.getElementById(id);
-  if(card.r){
-    el.textContent=card.r+(SUIT_DISP[card.s]||'?');
-    el.style.color=SUIT_COL[card.s]||'#e8f0ff';
-    el.classList.add('active');
-  }else{
-    el.textContent=id.toUpperCase();el.style.color='#6b7fa3';el.classList.remove('active');
-  }
-}
-
-function updateBoardDisplay(){
-  const labels=['翻牌1','翻牌2','翻牌3','转牌','河牌'];
-  for(let i=0;i<5;i++){
-    const el=document.getElementById('b'+i);
-    const c=board[i];
-    if(c&&c.length>=2){
-      el.textContent=c[0]+SUIT_DISP[c[1]];
-      el.style.color=SUIT_COL[c[1]];el.classList.add('active');
-    }else{
-      el.textContent=labels[i].substring(0,1)+(i<3?i+1:'');
-      el.style.color='#6b7fa3';el.classList.remove('active');
-    }
-  }
-}
-
-function getHand(){
-  if(!h1.r||!h1.s||!h2.r||!h2.s)return'';
-  return h1.r+h1.s+h2.r+h2.s;
-}
-
-function getBoardStr(){return board.filter(c=>c&&c.length>=2).join(' ');}
-
-function analyze(){
-  const hand=getHand();
-  if(!hand){alert('请先选择完整的手牌');return;}
-  const data={
-    hand,position:document.getElementById('position').value,
-    nOpponents:parseInt(document.getElementById('nOpponents').value),
-    potType:document.getElementById('potType').value,
-    action:document.getElementById('action').value,
-    betSize:parseFloat(document.getElementById('betSize').value)||0,
-    potSize:parseFloat(document.getElementById('potSize').value)||10,
-    stackSize:parseFloat(document.getElementById('stackSize').value)||100,
-    board:getBoardStr()
-  };
-  const d=gtoDecision(data);
-  showResult(d);
-}
-
-function showResult(d){
-  const r=document.getElementById('result');r.classList.add('show');
-  const dec=document.getElementById('decision');
-  dec.textContent=d.decision||'';
-  dec.className='decision '+(d.action==='call'?'call':d.action==='fold'?'fold':d.action==='raise'||d.action==='bet'||d.action==='shove'?'raise':'check');
-  document.getElementById('reason').textContent=d.reason||'';
-  const grid=document.getElementById('infoGrid');grid.innerHTML='';
-  const items=[
-    ['Hand',d.hand||'-'],['Equity',d.equity||'-'],['SPR',d.SPR||'-'],
-    ['Pot Odds',d.potOdds||'-'],['Texture',d.texture||'-'],['Action',d.action?d.action.toUpperCase():'-']
-  ];
-  items.forEach(([k,v])=>{if(v&&v!=='-'){grid.innerHTML+='<div class="info"><div class="info-label">'+k+'</div><div class="info-value">'+v+'</div></div>';}});
-  const detail=document.getElementById('detail');
-  let dt='';
-  if(d.textureDetail)dt+=d.textureDetail;
-  if(d.suggestedSize)dt+=(dt?' | ':'')+'Size: '+d.suggestedSize;
-  if(d.equityDetail)dt+=(dt?' | ':'')+d.equityDetail;
-  if(dt){detail.textContent=dt;detail.style.display='block';}else{detail.style.display='none';}
-  r.scrollIntoView({behavior:'smooth'});
+  var detail='Board: '+texture.texture;
+  if(texture.paired)detail+='/paired';
+  if(texture.flushPossible)detail+='/flush possible';
+  if(texture.straightPossible)detail+='/straight possible';
+  return{...result,decision:decision,reason:reason,action:actType,suggestedSize:suggestedSize,
+    equityDetail:'Equity: '+(equity*100).toFixed(1)+'%',textureDetail:detail};
 }
 
 init();
