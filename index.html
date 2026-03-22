@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Poker GTO</title>
+<title>德州GTO助手</title>
 <style>
 :root{--bg:#0a0e17;--card:#131a2b;--border:#1e2a42;--input:#1a2332;--text:#e8f0ff;--dim:#6b7fa3;--green:#00d26a;--red:#ff4757;--blue:#3b82f6;--yellow:#fbbf24;--purple:#a78bfa}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -52,13 +52,13 @@ select:focus,input:focus{outline:none;border-color:var(--blue)}
 </style>
 </head>
 <body>
-<div class="header"><h1>Poker GTO</h1><p>6-max / GTO Strategy</p></div>
+<div class="header"><h1>德州 GTO 助手</h1><p>6人桌 · GTO策略分析</p></div>
 
 <div class="card">
-<div class="label">HAND</div>
+<div class="label">手牌</div>
 <div class="hand-row">
-<div class="card-slot" id="h1" onclick="pickCard(1)">H1</div>
-<div class="card-slot" id="h2" onclick="pickCard(2)">H2</div>
+<div class="card-slot" id="h1" onclick="pickCard(1)">第1张</div>
+<div class="card-slot" id="h2" onclick="pickCard(2)">第2张</div>
 </div>
 <div class="suit-row" id="suitBtns" style="display:none;">
 <button class="suit-btn" onclick="pickSuit('s')">S</button>
@@ -69,7 +69,7 @@ select:focus,input:focus{outline:none;border-color:var(--blue)}
 </div>
 
 <div class="card">
-<div class="label">BOARD</div>
+<div class="label">公共牌</div>
 <div class="board-row">
 <div class="board-slot flop3" id="b0" onclick="pickBoard(0)"></div>
 <div class="board-slot flop3" id="b1" onclick="pickBoard(1)"></div>
@@ -80,7 +80,7 @@ select:focus,input:focus{outline:none;border-color:var(--blue)}
 </div>
 
 <div class="card">
-<div class="label">POSITION</div>
+<div class="label">位置</div>
 <select id="position">
 <option value="UTG">UTG</option>
 <option value="MP">MP</option>
@@ -90,45 +90,45 @@ select:focus,input:focus{outline:none;border-color:var(--blue)}
 <option value="BB">BB</option>
 </select>
 
-<div class="label" style="margin-top:8px">OPPONENTS</div>
+<div class="label" style="margin-top:8px">对手数量</div>
 <select id="nOpponents">
-<option value="1">1 Opponent</option>
-<option value="2">2 Opponents</option>
-<option value="3">3+ Opponents</option>
+<option value="1">1个对手</option>
+<option value="2">2个对手</option>
+<option value="3">3+个对手</option>
 </select>
 
-<div class="label" style="margin-top:8px">POT TYPE</div>
+<div class="label" style="margin-top:8px">底池类型</div>
 <select id="potType">
-<option value="single">Single Raised</option>
-<option value="3bet">3-bet Pot</option>
-<option value="4bet+">4-bet+ Pot</option>
+<option value="single">单次加注</option>
+<option value="3bet">3bet底池</option>
+<option value="4bet+">4bet+底池</option>
 </select>
 
-<div class="label" style="margin-top:8px">OPP ACTION</div>
+<div class="label" style="margin-top:8px">对手行动</div>
 <select id="action">
-<option value="check">Check</option>
-<option value="bet">Bet</option>
-<option value="raise">Raise</option>
-<option value="call">Call</option>
+<option value="check">过牌</option>
+<option value="bet">下注</option>
+<option value="raise">加注</option>
+<option value="call">跟注</option>
 </select>
 
 <div class="row">
 <div>
-<div class="label">BET (BB)</div>
+<div class="label">下注(BB)</div>
 <input type="number" id="betSize" value="0" min="0">
 </div>
 <div>
-<div class="label">POT (BB)</div>
+<div class="label">底池(BB)</div>
 <input type="number" id="potSize" value="10" min="1">
 </div>
 </div>
 <div>
-<div class="label">STACK (BB)</div>
+<div class="label">筹码(BB)</div>
 <input type="number" id="stackSize" value="100" min="1">
 </div>
 </div>
 
-<button class="btn" onclick="analyze()">ANALYZE</button>
+<button class="btn" onclick="analyze()">开始分析</button>
 
 <div class="result" id="result">
 <div class="decision" id="decision"></div>
@@ -141,7 +141,7 @@ select:focus,input:focus{outline:none;border-color:var(--blue)}
 <div class="rank-grid" id="rankGrid"></div>
 </div>
 
-<div class="footer">Poker GTO / All calculation runs in your browser</div>
+<div class="footer">Poker GTO / 所有计算在浏览器内完成，无需服务器</div>
 
 <script>
 // ============ GTO Engine (Pure JS) ============
@@ -307,58 +307,58 @@ function preflopDecision(result, hand, position, action, betSize, potType) {
   const raiseRange = PREFLOP_RANGE[position.toUpperCase()] || PREFLOP_RANGE['BTN'];
   const inRange = raiseRange.includes(std);
   if (['3bet', '4bet+'].includes(potType)) {
-    return {...result, decision: strength >= 88 ? 'Call' : 'Fold',
+    return {...result, decision: strength >= 88 ? '跟注' : 'Fold',
       reason: strength >= 88 ? `${std} strong enough for ${potType}` : `${std} not strong enough for ${potType}`,
       action: strength >= 88 ? 'call' : 'fold'};
   }
   if (['bet', 'raise', '3bet'].includes(action)) {
     if (betSize <= 3) {
       if (inRange || strength >= 78) {
-        return {...result, decision:'Call', reason:`${std} in ${position} range, ${betSize}BB worth calling`, action:'call'};
+        return {...result, decision:'跟注', reason:`${std} in ${position} range, ${betSize}BB worth calling`, action:'call'};
       }
       return {...result, decision:'Fold', reason:`${std} not in ${position} range, fold vs ${betSize}BB`, action:'fold'};
     } else {
-      return {...result, decision: strength >= 88 ? 'Call/Raise' : 'Fold',
+      return {...result, decision: strength >= 88 ? '跟注/加注' : 'Fold',
         reason: strength >= 88 ? `${std} is strong, can call or raise` : `${std} not strong enough for large raise`,
         action: strength >= 88 ? 'call' : 'fold'};
     }
   }
   if (inRange) {
     const size = potType === 'single' ? 3 : 4;
-    return {...result, decision:'Raise', reason:`${std} in ${position} raise range, suggest ${size}BB`, action:'raise', suggestedSize:`${size}BB`};
+    return {...result, decision:'加注', reason:`${std} in ${position} raise range, suggest ${size}BB`, action:'raise', suggestedSize:`${size}BB`};
   } else if (strength >= 65) {
-    return {...result, decision:'Call', reason:`${std} marginal, flat to see flop`, action:'call'};
+    return {...result, decision:'跟注', reason:`${std} marginal, flat to see flop`, action:'call'};
   }
   return {...result, decision:'Fold', reason:`${std} too weak for ${position}`, action:'fold'};
 }
 
 function postflopDecision(result, action, betSize, potSize, SPR, texture, equity, potOdds, nOpponents) {
   const isWet = texture.wetness >= 4;
-  let decision='Check', reason='', actType='check', suggestedSize='';
+  let decision='过牌', reason='', actType='check', suggestedSize='';
   if (['bet', 'raise'].includes(action)) {
     if (equity >= 0.65) {
       if (SPR <= 3) {
         decision='All-in'; reason=`Nut hand (${(equity*100).toFixed(0)}%) + low SPR (${SPR.toFixed(1)}), shove!`;
         actType='shove';
       } else {
-        decision='Raise'; reason=`Strong hand (${(equity*100).toFixed(0)}%), raise for value`;
+        decision='加注'; reason=`Strong hand (${(equity*100).toFixed(0)}%), raise for value`;
         actType='raise';
         suggestedSize=`${Math.floor(potSize * 0.75)}-${Math.floor(potSize * 1)}BB`;
       }
     } else if (equity >= 0.40) {
       if (potOdds >= 0.33) {
-        decision='Call'; reason=`Medium strength (${(equity*100).toFixed(0)}%), pot odds ${(potOdds*100).toFixed(0)}% justify call`;
+        decision='跟注'; reason=`Medium strength (${(equity*100).toFixed(0)}%), pot odds ${(potOdds*100).toFixed(0)}% justify call`;
         actType='call';
       } else if (isWet && nOpponents >= 2) {
         decision='Fold'; reason=`Wet board (${texture.texture}) + multiway, odds too poor to call`;
         actType='fold';
       } else {
-        decision='Call'; reason=`Marginal, pot odds ${(potOdds*100).toFixed(0)}% borderline`;
+        decision='跟注'; reason=`Marginal, pot odds ${(potOdds*100).toFixed(0)}% borderline`;
         actType='call';
       }
     } else {
       if ((texture.flushPossible || texture.straightPossible) && potOdds >= 0.25 && equity >= 0.25) {
-        decision='Call'; reason=`Draw + ${(potOdds*100).toFixed(0)}% odds, worth calling`;
+        decision='跟注'; reason=`Draw + ${(potOdds*100).toFixed(0)}% odds, worth calling`;
         actType='call';
       } else if (texture.flushPossible || texture.straightPossible) {
         decision='Fold'; reason=`Draw but odds insufficient (${(potOdds*100).toFixed(0)}%)`;
@@ -370,28 +370,28 @@ function postflopDecision(result, action, betSize, potSize, SPR, texture, equity
     }
   } else if (['check', 'call'].includes(action)) {
     if (equity >= 0.60) {
-      decision='Bet'; reason=`Strong hand (${(equity*100).toFixed(0)}%), bet for value`;
+      decision='下注'; reason=`Strong hand (${(equity*100).toFixed(0)}%), bet for value`;
       actType='bet';
       suggestedSize=`${Math.floor(potSize * 0.65)}-${Math.floor(potSize * 0.75)}BB`;
     } else if (equity >= 0.40) {
       if (isWet) {
-        decision='Check'; reason=`Wet board (${texture.texture}), play cautiously`;
+        decision='过牌'; reason=`Wet board (${texture.texture}), play cautiously`;
         actType='check';
       } else {
-        decision='Bet'; reason=`Medium strength, thin value bet`;
+        decision='下注'; reason=`Medium strength, thin value bet`;
         actType='bet';
         suggestedSize=`${Math.floor(potSize * 0.5)}BB`;
       }
     } else if (equity >= 0.30) {
       if (texture.flushPossible || texture.straightPossible) {
-        decision='Check'; reason=`Drawing hand, check to control pot`;
+        decision='过牌'; reason=`Drawing hand, check to control pot`;
         actType='check';
       } else {
-        decision='Check'; reason=`Weak hand, check and give up`;
+        decision='过牌'; reason=`Weak hand, check and give up`;
         actType='check';
       }
     } else {
-      decision='Check'; reason=`Very weak, check/fold`;
+      decision='过牌'; reason=`Very weak, check/fold`;
       actType='check';
     }
   }
@@ -461,7 +461,7 @@ function updateHand(id,card){
 }
 
 function updateBoardDisplay(){
-  const labels=['Flop1','Flop2','Flop3','Turn','River'];
+  const labels=['翻牌1','翻牌2','翻牌3','转牌','河牌'];
   for(let i=0;i<5;i++){
     const el=document.getElementById('b'+i);
     const c=board[i];
@@ -484,7 +484,7 @@ function getBoardStr(){return board.filter(c=>c&&c.length>=2).join(' ');}
 
 function analyze(){
   const hand=getHand();
-  if(!hand){alert('Select your hand first');return;}
+  if(!hand){alert('请先选择完整的手牌');return;}
   const data={
     hand,position:document.getElementById('position').value,
     nOpponents:parseInt(document.getElementById('nOpponents').value),
