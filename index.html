@@ -1,204 +1,195 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Procedural Shield Effect</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>德州胜率计算</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;overflow:hidden;font-family:monospace}
-canvas{display:block;width:100vw;height:100vh}
-#info{position:fixed;top:12px;left:12px;color:#4af;font-size:12px;z-index:10;text-shadow:0 0 10px #4af}
-#title{position:fixed;top:12px;right:12px;color:#fff;font-size:11px;z-index:10;text-align:right}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e17;color:#e8f0ff;min-height:100vh;padding:20px}
+h1{font-size:22px;text-align:center;margin-bottom:20px}
+.card-row{display:flex;gap:8px;margin-bottom:12px;align-items:center}
+.card-input{flex:1;height:50px;background:#1a2332;border:2px solid #1e2a42;border-radius:10px;color:#e8f0ff;font-size:20px;font-weight:700;text-align:center;outline:none}
+.card-input:focus{border-color:#3b82f6}
+.card-input.done{border-color:#00d26a;background:rgba(0,210,106,.08)}
+label{font-size:13px;color:#6b7fa3;display:block;margin-bottom:6px}
+.suit-btns{display:flex;gap:6px;margin-bottom:16px}
+.suit-btn{flex:1;height:44px;background:#1a2332;border:1px solid #1e2a42;border-radius:8px;color:#e8f0ff;font-size:15px;cursor:pointer}
+.board-row{display:flex;gap:6px;flex-wrap:wrap}
+.board-card{width:48px;height:48px;background:#1a2332;border:2px solid #1e2a42;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;cursor:pointer}
+.board-card.active{border-color:#3b82f6;background:rgba(59,130,246,.1)}
+.board-card.done{border-color:#00d26a}
+.btn{width:100%;height:52px;background:linear-gradient(135deg,#00d26a,#00a854);border:none;border-radius:10px;color:#000;font-size:18px;font-weight:700;cursor:pointer;margin-top:20px}
+.result{margin-top:24px;padding:24px;background:#131a2b;border:1px solid #1e2a42;border-radius:16px;text-align:center;display:none}
+.result.show{display:block}
+.big-num{font-size:64px;font-weight:900;color:#00d26a}
+.sub{font-size:14px;color:#6b7fa3;margin-top:8px}
+.rank-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);display:none;z-index:1000;flex-direction:column;align-items:center;justify-content:center}
+.rank-modal.active{display:flex}
+.rank-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:280px}
+.rank-btn{height:52px;background:#1a2332;border:1px solid #1e2a42;border-radius:8px;color:#e8f0ff;font-size:20px;font-weight:700;cursor:pointer}
+.info{font-size:12px;color:#6b7fa3;margin-top:6px;text-align:center}
 </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<div id="info">PROCEDURAL ENERGY SHIELD<br>VFX Demo | Raymarching + FBM + Hex Grid</div>
-<div id="title">TA Technical Art<br>WebGL Demo</div>
+<h1>德州胜率计算</h1>
+
+<div>
+<label>你的手牌</label>
+<div class="card-row">
+<input class="card-input" id="c1" placeholder="A" maxlength="1" onclick="pick(1)">
+<input class="card-input" id="c2" placeholder="K" maxlength="1" onclick="pick(2)">
+</div>
+<div class="suit-btns" id="suitBtns" style="display:none">
+<button class="suit-btn" onclick="setsuit('s')">♠ 黑桃</button>
+<button class="suit-btn" onclick="setsuit('h')">♥ 红桃</button>
+<button class="suit-btn" onclick="setsuit('d')">♦ 方块</button>
+<button class="suit-btn" onclick="setsuit('c')">♣ 梅花</button>
+</div>
+</div>
+
+<div style="margin-top:20px">
+<label>公共牌（可不填）</label>
+<div class="board-row">
+<div class="board-card" id="b0" onclick="pickb(0)"></div>
+<div class="board-card" id="b1" onclick="pickb(1)"></div>
+<div class="board-card" id="b2" onclick="pickb(2)"></div>
+<div class="board-card" id="b3" onclick="pickb(3)">T</div>
+<div class="board-card" id="b4" onclick="pickb(4)">R</div>
+</div>
+<div class="info">点击牌面选大小，再选花色</div>
+</div>
+
+<button class="btn" onclick="calc()">计算胜率</button>
+
+<div class="result" id="result">
+<div class="big-num" id="winRate">--</div>
+<div class="sub" id="subText"></div>
+</div>
+
+<div class="rank-modal" id="modal">
+<div class="rank-grid" id="grid"></div>
+</div>
 
 <script>
-var canvas=document.getElementById('c');
-var gl=canvas.getContext('webgl2')||canvas.getContext('webgl');
-if(!gl){document.body.innerHTML='<p style=color:#f00;padding:40px>WebGL not supported</p>';}
+var RANKS=['A','K','Q','J','T','9','8','7','6','5','4','3','2'];
+var SUIT_DISP={s:'\u2660',h:'\u2665',d:'\u2666',c:'\u2663'};
+var SUIT_COL={s:'#e8f0ff',h:'#ff6b6b',d:'#ff6b6b',c:'#e8f0ff'};
+var pickTarget=null;
+var h={r:'',s:''};
+var board=['','','','',''];
+var pickingBoard=-1;
 
-function resize(){
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
-  gl.viewport(0,0,canvas.width,canvas.height);
-}
-window.addEventListener('resize',resize);
-resize();
+var g=document.getElementById('grid');
+RANKS.forEach(function(r){
+  var b=document.createElement('button');
+  b.className='rank-btn';
+  b.textContent=r;
+  b.onclick=(function(rv){return function(){selRank(rv);};})(r);
+  g.appendChild(b);
+});
 
-var VS=`attribute vec2 a_pos;void main(){gl_Position=vec4(a_pos,0,1);}`;
-var FS=`precision highp float;
-uniform float u_t;
-uniform vec2 u_r;
-uniform float u_perturb;
+function pick(n){pickTarget=n;pickingBoard=-1;h={r:'',s:''};document.getElementById('suitBtns').style.display='flex';document.getElementById('modal').classList.add('active');}
+function pickb(idx){pickTarget=-1;pickingBoard=idx;board[idx]='';document.getElementById('modal').classList.add('active');}
 
-float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-float noise(vec2 p){
-  vec2 i=floor(p),f=fract(p);
-  f=f*f*(3.-2.*f);
-  return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),
-             mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
-}
-float fbm(vec2 p){
-  float v=0.,a=.5;
-  for(int i=0;i<5;i++){v+=a*noise(p);p*=2.;a*=.5;}
-  return v;
+function selRank(r){
+  document.getElementById('modal').classList.remove('active');
+  document.getElementById('suitBtns').style.display='flex';
+  if(pickingBoard>=0){board[pickingBoard]=r;updateBoard();}
+  else{h.r=r;var el=document.getElementById('c'+(pickTarget===1?1:2));el.value=r;el.classList.add('done');}
 }
 
-// Hex grid distance
-vec2 hexCenter(vec2 p){
-  vec2 r=vec2(1.,1.732);
-  vec2 h=r*.5;
-  vec2 a=mod(p,r)-h;
-  vec2 b=mod(p-h,r)-h;
-  return dot(a,a)<dot(b,b)?a:b;
-}
-float hexDist(vec2 p){
-  p=abs(p);
-  return max(dot(p,normalize(vec2(1,1.732))),p.x);
-}
-float hexGrid(vec2 uv,float scale,float thickness){
-  vec2 p=uv*scale;
-  vec2 h=hexCenter(p);
-  float d=hexDist(h);
-  return smoothstep(thickness,0.,abs(d-.4));
-}
-
-mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
-
-float shieldSDF(vec3 p){
-  float sphere=length(p)-1.;
-  // Add rippling distortion
-  float t=u_t*.5;
-  float ripple=sin(p.x*4.+t)*sin(p.y*4.+t*1.3)*sin(p.z*4.+t*.7)*.08;
-  return sphere+ripple;
-}
-
-vec3 calcNormal(vec3 p){
-  vec2 e=vec2(.001,0);
-  return normalize(vec3(
-    shieldSDF(p+e.xyy)-shieldSDF(p-e.xyy),
-    shieldSDF(p+e.yxy)-shieldSDF(p-e.yxy),
-    shieldSDF(p+e.yyx)-shieldSDF(p-e.yyx)
-  ));
-}
-
-void main(){
-  vec2 uv=(gl_FragCoord.xy-.5*u_r)/u_r.y;
-  float t=u_t;
-  
-  // Camera
-  vec3 ro=vec3(0,0,2.8);
-  vec3 rd=normalize(vec3(uv,-1.5));
-  
-  // Raymarch
-  float d=0.;
-  vec3 p;
-  bool hit=false;
-  for(int i=0;i<80;i++){
-    p=ro+rd*d;
-    float sdf=shieldSDF(p);
-    if(sdf<.001){hit=true;break;}
-    if(d>5.)break;
-    d+=sdf*.7;
+function setsuit(s){
+  document.getElementById('suitBtns').style.display='none';
+  if(pickingBoard>=0){board[pickingBoard]+=s;updateBoard();}
+  else{
+    h.s=s;
+    var el=document.getElementById('c'+(pickTarget===1?1:2));
+    el.value+=SUIT_DISP[s];
+    el.style.color=SUIT_COL[s];
+    el.classList.add('done');
   }
-  
-  vec4 col=vec4(0.,0.,.02,1.);
-  
-  if(hit){
-    vec3 n=calcNormal(p);
-    vec3 v=normalize(ro-p);
-    float fresnel=pow(1.-max(dot(n,v),0.),3.);
-    
-    // Hex grid in 3D space
-    vec3 hexP=p*3.;
-    vec2 hUV=hexP.xy+hexP.z*.5;
-    float hex=hexGrid(hUV,1.,.08);
-    
-    // Animated hex pulse
-    float pulse=sin(length(p)*6.-t*2.)*.5+.5;
-    float hexBright=hex*pulse*fresnel;
-    
-    // Noise displacement on surface
-    vec2 noiseUV=p.xy*2.+p.z+t*.2;
-    float n1=fbm(noiseUV);
-    float n2=fbm(noiseUV*2.+vec2(5.2,1.3));
-    float n3=fbm(noiseUV*4.+vec2(1.7,9.2));
-    float noiseFBM=n1*.5+n2*.3+n3*.2;
-    
-    // Color gradient based on normal + fresnel
-    vec3 baseCol=mix(vec3(.0,.8,1.),vec3(.2,.4,1.),fresnel);
-    vec3 energyCol=mix(vec3(0.,.6,1.),vec3(.5,.1,1.),noiseFBM);
-    
-    // Combine
-    float shieldLine=hexBright+fresnel*.5;
-    vec3 finalCol=baseCol*shieldLine+energyCol*fresnel*noiseFBM*2.;
-    
-    // Glow
-    float glow=pow(fresnel,2.)*1.5;
-    finalCol+=vec3(0.,.5,1.)*glow;
-    
-    col=vec4(finalCol,1.);
+}
+
+function updateBoard(){
+  var labels=['F1','F2','F3','T','R'];
+  for(var i=0;i<5;i++){
+    var el=document.getElementById('b'+i);
+    var c=board[i];
+    if(c&&c.length>=2){
+      el.textContent=c[0]+SUIT_DISP[c[1]];
+      el.style.color=SUIT_COL[c[1]];
+      el.classList.add('done');
+    }else{
+      el.textContent=labels[i];
+      el.style.color='#6b7fa3';
+      el.classList.remove('done');
+    }
   }
-  
-  // Background grid
-  vec2 bgUV=uv*8.;
-  float bgGrid=hexGrid(bgUV,1.,.05)*.15;
-  col.rgb+=vec3(.02,.05,.1)*bgGrid;
-  
-  // Vignette
-  float vig=1.-dot(uv,uv)*.6;
-  col.rgb*=vig;
-  
-  gl_FragColor=col;
 }
-`;
 
-function createShader(src,type){
-  var s=gl.createShader(type);
-  gl.shaderSource(s,src);
-  gl.compileShader(s);
-  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){
-    console.error(gl.getShaderInfoLog(s));
-    return null;
+var POCKET_PAIRS={'AA':100,'KK':99,'QQ':98,'JJ':97,'TT':95,'99':82,'88':78,'77':74,'66':70,'55':66,'44':62,'33':58,'22':54};
+var HIGH_CARDS={'AKs':96,'AQs':93,'AJs':90,'ATs':87,'A9s':84,'A8s':81,'A7s':78,'A6s':75,'A5s':80,'A4s':77,'A3s':74,'A2s':71,'AKo':94,'AQo':91,'AJo':88,'ATo':85,'A9o':82,'A8o':79,'A7o':76,'A6o':73,'A5o':78,'A4o':75,'A3o':72,'A2o':69,'KQs':87,'KJs':85,'KTs':82,'K9s':79,'K8s':76,'K7s':73,'K6s':70,'K5s':67,'K4s':64,'K3s':61,'K2s':58,'KQo':85,'KJo':83,'KTo':80,'K9o':77,'K8o':74,'K7o':71,'K6o':68,'K5o':65,'K4o':62,'K3o':59,'K2o':56,'QJs':83,'QTs':80,'Q9s':77,'Q8s':74,'Q7s':71,'Q6s':68,'Q5s':65,'Q4s':62,'Q3s':59,'Q2s':56,'QJo':81,'QTo':78,'Q9o':75,'Q8o':72,'Q7o':69,'Q6o':66,'Q5o':63,'Q4o':60,'Q3o':57,'Q2o':54,'JTs':80,'J9s':77,'J8s':74,'J7s':71,'J6s':68,'J5s':65,'J4s':62,'J3s':59,'J2s':56,'JTo':78,'J9o':75,'J8o':72,'J7o':69,'J6o':66,'J5o':63,'J4o':60,'J3o':57,'J2o':54,'T9s':77,'T8s':74,'T7s':71,'T6s':68,'T5s':65,'T4s':62,'T3s':59,'T2s':56,'T9o':75,'T8o':73,'T7o':71,'T6o':69,'T5o':67,'T4o':65,'T3o':63,'T2o':61,'98s':74,'97s':71,'96s':68,'95s':65,'94s':62,'93s':59,'92s':56,'98o':72,'97o':69,'96o':66,'95o':63,'94o':60,'93o':57,'92o':54,'87s':71,'86s':68,'85s':65,'84s':62,'83s':59,'82s':56,'87o':69,'86o':66,'85o':63,'84o':60,'83o':57,'82o':54,'76s':68,'75s':65,'74s':62,'73s':59,'72s':56,'76o':66,'75o':63,'74o':60,'73o':57,'72o':54,'65s':65,'64s':62,'63s':59,'62s':56,'65o':63,'64o':60,'63o':57,'62o':54,'54s':62,'53s':59,'52s':56,'54o':60,'53o':57,'52o':54,'43s':59,'42s':56,'43o':57,'42o':54,'32s':56,'32o':54};
+
+function handVal(hand){
+  if(!hand||hand.length<4)return 0;
+  var r1=hand[0],s1=hand[1],r2=hand[2],s2=hand[3];
+  if(r1===r2)return POCKET_PAIRS[r1+r2]||50;
+  if(s1===s2)return HIGH_CARDS[r1+r2+'s']||55;
+  return HIGH_CARDS[r1+r2+'o']||50;
+}
+
+function stdHand(hand){
+  if(!hand||hand.length<4)return'?';
+  var r1=hand[0],s1=hand[1],r2=hand[2],s2=hand[3];
+  if(r1===r2)return r1+r2;
+  if(s1===s2)return r1+r2+'s';
+  return r1+r2+'o';
+}
+
+function rval(r){return{'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'T':10,'J':11,'Q':12,'K':13,'A':14}[r]||0;}
+
+function calcEquity(hand,board){
+  var base=handVal(hand);
+  if(!board||board.length===0)return base/100;
+  var r1=hand[0],s1=hand[1],r2=hand[2],s2=hand[3];
+  var hasPair=r1===r2;
+  var bRanks=board.map(function(c){return c[0];});
+  var bSuits=board.map(function(c){return c[1];});
+  var str=base;
+  if(hasPair&&bRanks.some(function(r){return r===r1;}))str=Math.min(100,str+20);
+  var suitedCount=[s1,s2].filter(function(s){return bSuits.filter(function(bs){return bs===s;}).length>=1;}).length;
+  if(suitedCount>=1&&bSuits.filter(function(s){return s===s1||s===s2;}).length>=3)str+=10;
+  if(suitedCount>=2)str+=15;
+  var allRanks=[r1,r2].concat(bRanks).map(rval).sort(function(a,b){return a-b;});
+  var uniq=[...new Set(allRanks)].sort(function(a,b){return a-b;});
+  if(uniq.length>=4){for(var k=0;k<uniq.length-3;k++){if(uniq[k+3]-uniq[k]<=4){str+=12;break;}}}
+  str=Math.max(5,Math.min(95,str));
+  return str/100;
+}
+
+function calc(){
+  if(!h.r||!h.s){alert('请先选完整手牌');return;}
+  var hand=h.r+h.s;
+  var hand2='';
+  if(h.r===document.getElementById('c1').value[0]){
+    hand2=document.getElementById('c2').value;
+    if(!hand2||hand2.length<2){alert('请先选完整手牌');return;}
+  }else{
+    hand2=document.getElementById('c1').value;
+    if(!hand2||hand2.length<2){alert('请先选完整手牌');return;}
   }
-  return s;
+  hand=hand+hand2;
+  var bc=board.filter(function(c){return c&&c.length>=2;});
+  var eq=calcEquity(hand,bc);
+  var pct=(eq*100).toFixed(1);
+  document.getElementById('winRate').textContent=pct+'%';
+  var sub='手牌: '+stdHand(hand);
+  if(bc.length>0)sub+=' | 公共牌: '+bc.join(' ');
+  sub+=' | 胜率估算';
+  document.getElementById('subText').textContent=sub;
+  document.getElementById('result').classList.add('show');
 }
-
-var vs=createShader(VS,gl.VERTEX_SHADER);
-var fs=createShader(FS,gl.FRAGMENT_SHADER);
-var prog=gl.createProgram();
-gl.attachShader(prog,vs);
-gl.attachShader(prog,fs);
-gl.linkProgram(prog);
-if(!gl.getProgramParameter(prog,gl.LINK_STATUS))console.error(gl.getProgramInfoLog(prog));
-gl.useProgram(prog);
-
-var buf=gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER,buf);
-gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
-var loc=gl.getAttribLocation(prog,'a_pos');
-gl.enableVertexAttribArray(loc);
-gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
-
-var u_t=gl.getUniformLocation(prog,'u_t');
-var u_r=gl.getUniformLocation(prog,'u_r');
-var u_perturb=gl.getUniformLocation(prog,'u_perturb');
-
-var t=0;
-function render(){
-  t+=1/60;
-  gl.uniform1f(u_t,t);
-  gl.uniform2f(u_r,canvas.width,canvas.height);
-  gl.uniform1f(u_perturb,0);
-  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
-  requestAnimationFrame(render);
-}
-render();
 </script>
 </body>
 </html>
